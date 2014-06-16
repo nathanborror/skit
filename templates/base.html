@@ -1,0 +1,29 @@
+{{define "title"}}
+  <title>{{.}}</title>
+{{end}}
+
+{{define "header"}}
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/static/stylesheets/screen.css">
+
+  <script type="text/javascript" src="/static/javascript/vendor/react.js"></script>
+  <script type="text/javascript" src="/static/javascript/vendor/JSXTransformer.js"></script>
+  <script type="text/javascript" src="/static/javascript/vendor/jquery.js"></script>
+  <script type="text/javascript" src="/static/javascript/vendor/jquery-ui.js"></script>
+
+  <script type="text/javascript" src="/static/javascript/main.js"></script>
+{{end}}
+
+{{define "signin"}}
+  {{if not .session}}
+  <a class="ui-signin-button" href="/user/signin/">Sign in</a>
+  {{end}}
+{{end}}
+
+{{define "footer"}}
+  <footer>
+    {{range .}}
+    <a class="ui-head" href="#">{{.}}</a>
+    {{end}}
+  </footer>
+{{end}}

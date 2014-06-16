@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  {{template "title" "Home"}}
+  {{template "header"}}
+</head>
+
+<body>
+
+{{template "signin" .}}
+
+<div id="content"></div>
+
+{{template "footer" .connections}}
+
+<script type="text/jsx" src="/static/javascript/skits.js"></script>
+<script type="text/jsx">
+  /** @jsx React.DOM */
+  React.renderComponent(
+    <SkitBox url={window.location.pathname} />,
+      document.getElementById('content'));
+</script>
+
+</body>
+</html>

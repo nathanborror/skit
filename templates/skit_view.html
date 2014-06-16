@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  {{template "title" "Page"}}
+  {{template "header"}}
+</head>
+
+<body>
+
+<div id="content"></div>
+
+{{template "footer" .users}}
+
+<script type="text/jsx" src="/static/javascript/skits.js"></script>
+<script type="text/jsx">
+  /** @jsx React.DOM */
+  React.renderComponent(
+    <SkitBox url={window.location.pathname} parent="{{.page.Hash}}" pollInterval={2000} />,
+      document.getElementById('content'));
+</script>
+
+</body>
+</html>
