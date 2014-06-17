@@ -27,23 +27,15 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	children, err := repo.ListWithParent(hash)
+	c, err := repo.ListWithParent(hash)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	if r.Header.Get("X-Requested-With") == "XMLHttpRequest" {
-		render.RenderJSON(w, map[string]interface{}{
-			"skit":     s,
-			"children": children,
-		})
-		return
-	}
-
-	render.RenderTemplate(w, "skit_view", map[string]interface{}{
+	render.Render(w, r, "skit_view", map[string]interface{}{
 		"skit":     s,
-		"children": children,
+		"children": c,
 		// "connections": h.connections,
 	})
 }

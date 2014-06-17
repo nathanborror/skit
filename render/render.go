@@ -14,6 +14,16 @@ var funcMap = template.FuncMap{
 	"initials": initials,
 }
 
+func Render(w http.ResponseWriter, r *http.Request, tmpl string, context interface{}) {
+	// TOOD: There is a better way to detect XHR requests,
+	// this is not that way.
+	if r.Header.Get("X-Requested-With") == "XMLHttpRequest" {
+		RenderJSON(w, context)
+		return
+	}
+	RenderTemplate(w, tmpl, context)
+}
+
 // RenderTemplate renders a given template along with any data passed
 func RenderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
 	templates := template.New("").Funcs(funcMap)

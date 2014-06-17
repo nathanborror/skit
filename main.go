@@ -32,19 +32,30 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if r.Header.Get("X-Requested-With") == "XMLHttpRequest" {
-		render.RenderJSON(w, map[string]interface{}{
-			"skit": "",
-			"children": s,
-		})
+	render.Render(w, r, "home", map[string]interface{}{
+		"session":     session.Values["hash"],
+		"skit":        "",
+		"children":    s,
+		// "connections": h.connections,
+	})
+}
+
+func userHomeHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	user := vars["user"]
+	session, _ := store.Get(r, "authenticated-user")
+
+	s, err := skitRepo.ListWithUser(user)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	render.RenderTemplate(w, "home", map[string]interface{}{
-		"session": session.Values["hash"],
-		"skit": "",
-		"children": s,
-		"connections": h.connections,
+	render.Render(w, r, "home", map[string]interface{}{
+		"session":     session.Values["hash"],
+		"skit":        "",
+		"children":    s,
+		// "connections": h.connections,
 	})
 }
 
@@ -68,6 +79,7 @@ func main() {
 	s.HandleFunc("/new", skits.NewHandler)
 
 	r.HandleFunc("/ws", socketHandler)
+	r.HandleFunc("/u/{user:[a-zA-Z0-9-]+}", userHomeHandler)
 	r.HandleFunc("/", homeHandler)
 
 	http.Handle("/", r)
