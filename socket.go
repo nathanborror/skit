@@ -6,10 +6,13 @@ package main
 
 import (
 	"github.com/gorilla/websocket"
+	"github.com/nathanborror/skit/users"
 	"log"
 	"net/http"
 	"time"
 )
+
+var userRepo = users.NewSqlUserRepository("db.sqlite3")
 
 const (
 	writeWait      = 10 * time.Second    // Time allowed to write a message to the peer.
@@ -27,6 +30,7 @@ var upgrader = websocket.Upgrader{
 type connection struct {
 	ws   *websocket.Conn // The websocket connection.
 	send chan []byte     // Buffered channel of outbound messages.
+	User *users.User
 }
 
 // wsRequest
@@ -97,7 +101,15 @@ func socketHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	c := &connection{send: make(chan []byte, 256), ws: ws}
+
+	session, _ := store.Get(r, "authenticated-user")
+	hash := session.Values["hash"].(string)
+	u, err := userRepo.Load(hash)
+	if err != nil {
+		log.Println(err)
+	}
+
+	c := &connection{send: make(chan []byte, 256), ws: ws, User: u}
 	h.register <- c
 	go c.writePump()
 	c.readPump()

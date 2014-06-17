@@ -22,8 +22,8 @@
 
 {{define "footer"}}
   <footer>
-    {{range .}}
-    <a class="ui-head" href="#">{{.}}</a>
+    {{range $key, $value := .}}
+    <a class="ui-head" href="/u/{{$key.User.Hash}}" data-hash="{{$key.User.Hash}}">{{$key.User.Name | initials}}</a>
     {{end}}
   </footer>
 {{end}}

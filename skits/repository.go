@@ -6,4 +6,6 @@ type SkitRepository interface {
 	Delete(hash string) error
 	Save(skit *Skit) error
 	List(limit int) ([]*Skit, error)
+	ListWithParent(parent string) ([]*Skit, error)
+	ListWithUser(user string) ([]*Skit, error)
 }

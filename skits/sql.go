@@ -61,6 +61,18 @@ func (r *sqlSkitRepository) Delete(hash string) error {
 
 func (r *sqlSkitRepository) List(limit int) ([]*Skit, error) {
 	obj := []*Skit{}
-	err := r.dbmap.Select(&obj, "SELECT * FROM skit ORDER BY modified DESC LIMIT ?", limit)
+	err := r.dbmap.Select(&obj, "SELECT * FROM skit WHERE parent = '' ORDER BY modified DESC LIMIT ?", limit)
+	return obj, err
+}
+
+func (r *sqlSkitRepository) ListWithParent(parent string) ([]*Skit, error) {
+	obj := []*Skit{}
+	err := r.dbmap.Select(&obj, "SELECT * FROM skit WHERE parent = ? ORDER BY modified DESC", parent)
+	return obj, err
+}
+
+func (r *sqlSkitRepository) ListWithUser(user string) ([]*Skit, error) {
+	obj := []*Skit{}
+	err := r.dbmap.Select(&obj, "SELECT * FROM skit WHERE user = ? ORDER BY modified DESC", user)
 	return obj, err
 }

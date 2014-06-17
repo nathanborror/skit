@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  {{template "title" "Page"}}
+  {{template "title" "Skit"}}
   {{template "header"}}
 </head>
 
@@ -9,13 +9,13 @@
 
 <div id="content"></div>
 
-{{template "footer" .users}}
+{{template "footer" .connections}}
 
 <script type="text/jsx" src="/static/javascript/skits.js"></script>
 <script type="text/jsx">
   /** @jsx React.DOM */
   React.renderComponent(
-    <SkitBox url={window.location.pathname} parent="{{.page.Hash}}" pollInterval={2000} />,
+    <SkitBox url={window.location.pathname} parent="{{.skit.Hash}}" />,
       document.getElementById('content'));
 </script>
 

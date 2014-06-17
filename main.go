@@ -34,14 +34,16 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.Header.Get("X-Requested-With") == "XMLHttpRequest" {
 		render.RenderJSON(w, map[string]interface{}{
-			"skits": s,
+			"skit": "",
+			"children": s,
 		})
 		return
 	}
 
 	render.RenderTemplate(w, "home", map[string]interface{}{
 		"session": session.Values["hash"],
-		"skits": s,
+		"skit": "",
+		"children": s,
 		"connections": h.connections,
 	})
 }
@@ -52,18 +54,18 @@ func main() {
 	r := mux.NewRouter()
 
 	// Users
-	u := r.PathPrefix("/user").Subrouter()
-	u.HandleFunc("/signin/", users.SigninViewHandler)
-	u.HandleFunc("/signout/", users.SignoutViewHandler)
-	u.HandleFunc("/register/", users.RegisterViewHandler)
+	u := r.PathPrefix("/u").Subrouter()
+	u.HandleFunc("/signin", users.SigninViewHandler)
+	u.HandleFunc("/signout", users.SignoutViewHandler)
+	u.HandleFunc("/register", users.RegisterViewHandler)
 
 	// Skit
-	s := r.PathPrefix("/skit").Subrouter()
-	s.HandleFunc("/view/{hash:[a-zA-Z0-9-]+}", skits.ViewHandler)
-	s.HandleFunc("/edit/{hash:[a-zA-Z0-9-]+}", skits.EditHandler)
-	s.HandleFunc("/delete/{hash:[a-zA-Z0-9-]+}", skits.DeleteHandler)
-	s.HandleFunc("/save/", skits.SaveHandler)
-	s.HandleFunc("/new/", skits.NewHandler)
+	s := r.PathPrefix("/s").Subrouter()
+	s.HandleFunc("/{hash:[a-zA-Z0-9-]+}", skits.ViewHandler)
+	s.HandleFunc("/{hash:[a-zA-Z0-9-]+}/edit", skits.EditHandler)
+	s.HandleFunc("/{hash:[a-zA-Z0-9-]+}/delete", skits.DeleteHandler)
+	s.HandleFunc("/save", skits.SaveHandler)
+	s.HandleFunc("/new", skits.NewHandler)
 
 	r.HandleFunc("/ws", socketHandler)
 	r.HandleFunc("/", homeHandler)

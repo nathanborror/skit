@@ -31,7 +31,7 @@ func SigninViewHandler(w http.ResponseWriter, r *http.Request) {
 
 		u, err := repo.LoadWithPassword(email, string(passwordHash))
 		if err != nil {
-			http.Redirect(w, r, "/user/signin/", http.StatusFound)
+			http.Redirect(w, r, "/u/signin", http.StatusFound)
 			return
 		}
 
@@ -60,7 +60,7 @@ func RegisterViewHandler(w http.ResponseWriter, r *http.Request) {
 		name := r.FormValue("name")
 
 		if email == "" && password == "" {
-			http.Redirect(w, r, "/user/register/", http.StatusFound)
+			http.Redirect(w, r, "/u/register", http.StatusFound)
 		}
 
 		// Generate password hash
@@ -79,7 +79,7 @@ func RegisterViewHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		http.Redirect(w, r, "/user/signin/", http.StatusFound)
+		http.Redirect(w, r, "/u/signin", http.StatusFound)
 	}
 
 	render.RenderTemplate(w, "user_register", nil)

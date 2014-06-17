@@ -27,10 +27,24 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: Get child skits
+	children, err := repo.ListWithParent(hash)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if r.Header.Get("X-Requested-With") == "XMLHttpRequest" {
+		render.RenderJSON(w, map[string]interface{}{
+			"skit": s,
+			"children": children,
+		})
+		return
+	}
 
 	render.RenderTemplate(w, "skit_view", map[string]interface{}{
 		"skit":  s,
+		"children": children,
+		// "connections": h.connections,
 	})
 }
 
@@ -55,7 +69,7 @@ func EditHandler(w http.ResponseWriter, r *http.Request) {
 func SaveHandler(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, "authenticated-user")
 	if session.Values["hash"] == nil {
-		http.Redirect(w, r, "/user/signin/", http.StatusFound)
+		http.Redirect(w, r, "/u/signin", http.StatusFound)
 		return
 	}
 
@@ -76,7 +90,7 @@ func SaveHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	http.Redirect(w, r, "/skit/view/"+hash, http.StatusFound)
+	http.Redirect(w, r, "/s/"+hash, http.StatusFound)
 }
 
 // DeleteHandler deletes a skit
