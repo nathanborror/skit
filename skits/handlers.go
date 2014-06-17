@@ -35,14 +35,14 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.Header.Get("X-Requested-With") == "XMLHttpRequest" {
 		render.RenderJSON(w, map[string]interface{}{
-			"skit": s,
+			"skit":     s,
 			"children": children,
 		})
 		return
 	}
 
 	render.RenderTemplate(w, "skit_view", map[string]interface{}{
-		"skit":  s,
+		"skit":     s,
 		"children": children,
 		// "connections": h.connections,
 	})

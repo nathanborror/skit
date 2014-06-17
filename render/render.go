@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"github.com/russross/blackfriday"
 	"net/http"
-	"text/template"
 	"regexp"
+	"text/template"
 )
 
 var funcMap = template.FuncMap{
 	"markdown": markDowner,
-	"initials":  initials,
+	"initials": initials,
 }
 
 // RenderTemplate renders a given template along with any data passed

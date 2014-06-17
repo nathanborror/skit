@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
+	"github.com/nathanborror/skit/render"
 	"github.com/nathanborror/skit/skits"
 	"github.com/nathanborror/skit/users"
-	"github.com/nathanborror/skit/render"
 	"net/http"
 	"os"
 )
