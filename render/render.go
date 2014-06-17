@@ -6,11 +6,12 @@ import (
 	"github.com/russross/blackfriday"
 	"net/http"
 	"text/template"
+	"regexp"
 )
 
 var funcMap = template.FuncMap{
 	"markdown": markDowner,
-	"initial":  initial,
+	"initials":  initials,
 }
 
 // RenderTemplate renders a given template along with any data passed
@@ -39,7 +40,8 @@ func markDowner(args ...interface{}) string {
 	return string(s)
 }
 
-func initial(args ...interface{}) string {
+func initials(args ...interface{}) string {
 	s := fmt.Sprintf("%s", args...)
-	return s[:1]
+	re := regexp.MustCompile("[^A-Z]")
+	return re.ReplaceAllString(s, "")
 }
