@@ -52,7 +52,6 @@ func (h *hub) run() {
 		case r := <-h.incoming:
 			var obj Message
 			json.Unmarshal(r.message, &obj)
-			fmt.Println(obj.Url)
 
 			req, err := http.NewRequest("GET", "http://localhost:8080"+obj.Url, nil)
 			req.Header.Add("X-Requested-With", "XMLHttpRequest")
