@@ -5,10 +5,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"encoding/json"
 )
 
 // hub maintains the set of active connections and broadcasts messages to the
@@ -20,6 +20,7 @@ type hub struct {
 	unregister  chan *connection     // Unregister requests from connections
 }
 
+// h represents a WebSocket hub
 var h = hub{
 	incoming:    make(chan wsRequest),
 	register:    make(chan *connection),
@@ -36,8 +37,9 @@ const (
 )
 */
 
+// Message represents a message
 type Message struct {
-	Url string
+	URL string
 	//Op Op
 }
 
@@ -53,7 +55,7 @@ func (h *hub) run() {
 			var obj Message
 			json.Unmarshal(r.message, &obj)
 
-			req, err := http.NewRequest("GET", "http://localhost:8080"+obj.Url, nil)
+			req, err := http.NewRequest("GET", "http://localhost:8080"+obj.URL, nil)
 			req.Header.Add("X-Requested-With", "XMLHttpRequest")
 			resp, err := http.DefaultClient.Do(req)
 			if err != nil {
