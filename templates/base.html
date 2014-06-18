@@ -10,13 +10,12 @@
   <script type="text/javascript" src="/static/javascript/vendor/JSXTransformer.js"></script>
   <script type="text/javascript" src="/static/javascript/vendor/jquery.js"></script>
   <script type="text/javascript" src="/static/javascript/vendor/jquery-ui.js"></script>
-
   <script type="text/javascript" src="/static/javascript/main.js"></script>
 {{end}}
 
 {{define "signin"}}
   {{if not .session}}
-  <a class="ui-signin-button" href="/user/signin/">Sign in</a>
+  <a class="ui-signin-button" href="/signin">Sign in</a>
   {{end}}
 {{end}}
 
