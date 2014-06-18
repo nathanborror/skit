@@ -73,6 +73,6 @@ func (r *sqlSkitRepository) ListWithParent(parent string) ([]*Skit, error) {
 
 func (r *sqlSkitRepository) ListWithUser(user string) ([]*Skit, error) {
 	obj := []*Skit{}
-	err := r.dbmap.Select(&obj, "SELECT * FROM skit WHERE user = ? ORDER BY modified DESC", user)
+	err := r.dbmap.Select(&obj, "SELECT * FROM skit WHERE user = ? AND parent = '' ORDER BY modified DESC", user)
 	return obj, err
 }
