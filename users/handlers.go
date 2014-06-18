@@ -16,9 +16,6 @@ var repo = NewSqlUserRepository("db.sqlite3")
 // SigninViewHandler signs a user in
 func SigninViewHandler(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, "authenticated-user")
-	if session.Values["hash"] != nil {
-		http.Redirect(w, r, "/", http.StatusFound)
-	}
 
 	if r.Method == "POST" {
 		email := r.FormValue("email")
@@ -31,7 +28,7 @@ func SigninViewHandler(w http.ResponseWriter, r *http.Request) {
 
 		u, err := repo.LoadWithPassword(email, string(passwordHash))
 		if err != nil {
-			http.Redirect(w, r, "/u/signin", http.StatusFound)
+			http.Redirect(w, r, "/signin", http.StatusFound)
 			return
 		}
 
@@ -60,7 +57,7 @@ func RegisterViewHandler(w http.ResponseWriter, r *http.Request) {
 		name := r.FormValue("name")
 
 		if email == "" && password == "" {
-			http.Redirect(w, r, "/u/register", http.StatusFound)
+			http.Redirect(w, r, "/register", http.StatusFound)
 		}
 
 		// Generate password hash
@@ -79,7 +76,7 @@ func RegisterViewHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		http.Redirect(w, r, "/u/signin", http.StatusFound)
+		http.Redirect(w, r, "/signin", http.StatusFound)
 	}
 
 	render.RenderTemplate(w, "user_register", nil)

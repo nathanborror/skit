@@ -25,6 +25,11 @@ func init() {
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, "authenticated-user")
+	hash := session.Values["hash"]
+	if hash == nil {
+		http.Redirect(w, r, "/signin", http.StatusFound)
+		return
+	}
 
 	s, err := skitRepo.List(100)
 	if err != nil {
@@ -33,28 +38,28 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render.Render(w, r, "home", map[string]interface{}{
-		"session":     session.Values["hash"],
-		"skit":        "",
-		"children":    s,
+		"session":  hash,
+		"skit":     "",
+		"children": s,
 		// "connections": h.connections,
 	})
 }
 
 func userHomeHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	user := vars["user"]
+	hash := vars["hash"]
 	session, _ := store.Get(r, "authenticated-user")
 
-	s, err := skitRepo.ListWithUser(user)
+	s, err := skitRepo.ListWithUser(hash)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	render.Render(w, r, "home", map[string]interface{}{
-		"session":     session.Values["hash"],
-		"skit":        "",
-		"children":    s,
+		"session":  session.Values["hash"],
+		"skit":     "",
+		"children": s,
 		// "connections": h.connections,
 	})
 }
@@ -65,21 +70,20 @@ func main() {
 	r := mux.NewRouter()
 
 	// Users
-	u := r.PathPrefix("/u").Subrouter()
-	u.HandleFunc("/signin", users.SigninViewHandler)
-	u.HandleFunc("/signout", users.SignoutViewHandler)
-	u.HandleFunc("/register", users.RegisterViewHandler)
+	r.HandleFunc("/signin", users.SigninViewHandler)
+	r.HandleFunc("/signout", users.SignoutViewHandler)
+	r.HandleFunc("/register", users.RegisterViewHandler)
 
 	// Skit
 	s := r.PathPrefix("/s").Subrouter()
-	s.HandleFunc("/{hash:[a-zA-Z0-9-]+}", skits.ViewHandler)
-	s.HandleFunc("/{hash:[a-zA-Z0-9-]+}/edit", skits.EditHandler)
-	s.HandleFunc("/{hash:[a-zA-Z0-9-]+}/delete", skits.DeleteHandler)
 	s.HandleFunc("/save", skits.SaveHandler)
 	s.HandleFunc("/new", skits.NewHandler)
+	s.HandleFunc("/{hash:[a-zA-Z0-9-]+}/edit", skits.EditHandler)
+	s.HandleFunc("/{hash:[a-zA-Z0-9-]+}/delete", skits.DeleteHandler)
+	s.HandleFunc("/{hash:[a-zA-Z0-9-]+}", skits.ViewHandler)
 
 	r.HandleFunc("/ws", socketHandler)
-	r.HandleFunc("/u/{user:[a-zA-Z0-9-]+}", userHomeHandler)
+	r.HandleFunc("/u/{hash:[a-zA-Z0-9-]+}", userHomeHandler)
 	r.HandleFunc("/", homeHandler)
 
 	http.Handle("/", r)

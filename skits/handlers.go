@@ -61,7 +61,7 @@ func EditHandler(w http.ResponseWriter, r *http.Request) {
 func SaveHandler(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, "authenticated-user")
 	if session.Values["hash"] == nil {
-		http.Redirect(w, r, "/u/signin", http.StatusFound)
+		http.Redirect(w, r, "/signin", http.StatusFound)
 		return
 	}
 
