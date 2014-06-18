@@ -5,14 +5,18 @@
 var Skit = React.createClass({
   handleDelete: function() {
     $.get('/s/'+this.props.hash+'/delete', function(data) {
-      window.SOCKET.send('{"url": "/"}');
+      window.State.refresh();
     });
+    return false;
+  },
+  handleClick: function() {
+    window.State.goto('/s/'+this.props.hash);
     return false;
   },
   render: function() {
     return (
       <div className="ui-item" style={{"border-color": handleColor(this.props.user)}}>
-        <a href={'/s/'+this.props.hash}>{this.props.children}</a>
+        <a href="#" onClick={this.handleClick}>{this.props.children}</a>
         <a className="ui-item-delete" href="#" onClick={this.handleDelete}>x</a>
       </div>
     );
@@ -45,11 +49,12 @@ var SkitForm = React.createClass({
     return false;
   },
   render: function() {
+    var hash = this.props.parent ? this.props.parent.hash : "";
     return (
       <form className="ui-form" onSubmit={this.handleSubmit}>
         <input type="text" ref="text" placeholder="What are you thinking about?" />
         <input type="hidden" ref="hash" value="" />
-        <input type="hidden" ref="parent" value={this.props.parent} />
+        <input type="hidden" ref="parent" value={hash} />
         <button type="submit" className="hidden">Save</button>
       </form>
     );
@@ -58,7 +63,7 @@ var SkitForm = React.createClass({
 
 var SkitHeader = React.createClass({
   handleBack: function(e) {
-    window.history.back();
+    window.State.back();
     return false;
   },
   render: function() {
@@ -68,14 +73,13 @@ var SkitHeader = React.createClass({
           <h1>Skit</h1>
         </header>
       )
-    } else {
-      return (
-        <header>
-          <a className="ui-back" href="#" onClick={this.handleBack}>Back</a>
-          <h1>Skit {this.props.data.text}</h1>
-        </header>
-      )
     }
+    return (
+      <header>
+        <a className="ui-back" href="#" onClick={this.handleBack}>Back</a>
+        <h1>Skit {this.props.data.text}</h1>
+      </header>
+    )
   }
 });
 
@@ -83,11 +87,11 @@ var SkitBox = React.createClass({
   handleSubmit: function(skit) {
     var skits = this.state.data;
     var newSkits = [skit].concat(skits);
-    var payload = '{"url": "'+this.props.url+'"}';
+
     this.setState({data: newSkits});
 
     $.post('/s/save', skit, function(data) {
-      window.SOCKET.send(payload);
+      window.State.refresh();
     }.bind(this));
     return false;
   },
@@ -96,10 +100,10 @@ var SkitBox = React.createClass({
     this.setState({data: data});
   },
   componentWillMount: function() {
-    var payload = '{"url": "'+this.props.url+'"}';
+    var url = this.props.url;
     window.SOCKET.onmessage = this.handleMessage;
     window.SOCKET.onopen = function() {
-      window.SOCKET.send(payload);
+      window.State.goto(url);
     }
   },
   getInitialState: function() {
@@ -110,7 +114,7 @@ var SkitBox = React.createClass({
       <div>
         <SkitHeader data={this.state.data.skit} />
         <article>
-          <SkitForm onSubmit={this.handleSubmit} parent={this.props.parent} />
+          <SkitForm onSubmit={this.handleSubmit} parent={this.state.data.skit} />
           <SkitList data={this.state.data.children} />
         </article>
       </div>
