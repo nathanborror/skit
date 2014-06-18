@@ -37,7 +37,7 @@ const (
 )
 */
 
-// Message represents a message
+// Message expects a url and an operation (request or broadcast)
 type Message struct {
 	URL string
 	//Op Op
@@ -56,6 +56,7 @@ func (h *hub) run() {
 			json.Unmarshal(r.message, &obj)
 
 			req, err := http.NewRequest("GET", "http://localhost:8080"+obj.URL, nil)
+
 			// TODO: Replace this with "the better way" referenced in
 			// render.go and update here.
 			req.Header.Add("X-Requested-With", "XMLHttpRequest")
