@@ -94,6 +94,8 @@ func socketHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method not allowed", 405)
 		return
 	}
+
+	// Upgrade request to WebSocket
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		if _, ok := err.(websocket.HandshakeError); !ok {
@@ -102,13 +104,20 @@ func socketHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Check for authenticated user
 	session, _ := store.Get(r, "authenticated-user")
-	hash := session.Values["hash"].(string)
-	u, err := userRepo.Load(hash)
+	if session.Values["hash"] == nil {
+		return
+	}
+
+	// Grab user making request
+	userHash := session.Values["hash"].(string)
+	u, err := userRepo.Load(userHash)
 	if err != nil {
 		log.Println(err)
 	}
 
+	// Create connection
 	c := &connection{send: make(chan []byte, 256), ws: ws, User: u}
 	h.register <- c
 	go c.writePump()
