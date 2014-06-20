@@ -25,13 +25,13 @@ func init() {
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, "authenticated-user")
-	hash := session.Values["hash"]
-	if hash == nil {
+	hash := session.Values["hash"].(string)
+	if hash == "" {
 		http.Redirect(w, r, "/signin", http.StatusFound)
 		return
 	}
 
-	s, err := skitRepo.List(100)
+	s, err := skitRepo.ListWithUser(hash)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
