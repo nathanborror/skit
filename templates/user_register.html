@@ -8,13 +8,19 @@
 <body>
 
 <article>
-  <form action="." method="post">
-    <input type="text" name="name" placeholder="Name">
-    <input type="text" name="email" value="" placeholder="Your email address">
-    <input type="password" name="password" value="" placeholder="Your password">
-    <button type="submit">Register</button>
+  <form action="/register" method="post">
+    <fieldset>
+      <input type="text" name="name" placeholder="Name">
+      <input type="text" name="email" value="" placeholder="Your email address">
+      <input type="password" name="password" value="" placeholder="Your password">
+      <button type="submit">Register</button>
+    </fieldset>
   </form>
 </article>
+
+<footer>
+  <a href="/signin">Sign into an existing account</a>
+</footer>
 
 </body>
 </html>
