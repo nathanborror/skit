@@ -53,9 +53,10 @@ func SigninViewHandler(w http.ResponseWriter, r *http.Request) {
 		u := Authenticate(email, password, w, r)
 		if u == nil {
 			http.Redirect(w, r, "/signin", http.StatusFound)
+			return
 		}
-
 		http.Redirect(w, r, "/", http.StatusFound)
+		return
 	}
 
 	render.RenderTemplate(w, "user_signin", nil)
@@ -78,6 +79,7 @@ func RegisterViewHandler(w http.ResponseWriter, r *http.Request) {
 
 		if email == "" && password == "" {
 			http.Redirect(w, r, "/register", http.StatusFound)
+			return
 		}
 
 		hash := GenerateUserHash(email)
