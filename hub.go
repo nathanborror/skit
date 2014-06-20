@@ -6,8 +6,8 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 )
 
@@ -28,19 +28,20 @@ var h = hub{
 	connections: make(map[*connection]bool),
 }
 
-/*
+// Op represents 'broadcast' or 'request'
 type Op int
 
 const (
+	// Request means we only update the client making the request
 	Request Op = iota
+	// Broadcast means we update all connected clients
 	Broadcast
 )
-*/
 
 // Message expects a url and an operation (request or broadcast)
 type Message struct {
 	URL string
-	//Op Op
+	Op  Op
 }
 
 func (h *hub) run() {
@@ -57,25 +58,61 @@ func (h *hub) run() {
 
 			req, err := http.NewRequest("GET", "http://localhost:8080"+obj.URL, nil)
 
+			// Update cursor
+			r.connection.Cursor = obj.URL
+
+			// Add cookie
+			req.AddCookie(r.connection.Cookie)
+
 			// TODO: Replace this with "the better way" referenced in
 			// render.go and update here.
 			req.Header.Add("X-Requested-With", "XMLHttpRequest")
+
+			// Make request
 			resp, err := http.DefaultClient.Do(req)
 			if err != nil {
-				fmt.Println(err)
+				log.Println(err)
 			}
 
+			// Get the body of the response
 			body, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
-				fmt.Println(err)
+				log.Println(err)
 			}
 
-			for c := range h.connections {
-				select {
-				case c.send <- body:
-				default:
-					close(c.send)
-					delete(h.connections, c)
+			if obj.Op == Request  {
+				// Only send to clients with cursors on the request URL
+				for c := range h.connections {
+					// if r.connection.User == c.User {
+					if c.Cursor == obj.URL {
+						if obj.URL != "/" {
+							select {
+							case c.send <- body:
+							default:
+								close(c.send)
+								delete(h.connections, c)
+							}
+						} else {
+							if c.User == r.connection.User {
+								select {
+								case c.send <- body:
+								default:
+									close(c.send)
+									delete(h.connections, c)
+								}
+							}
+						}
+					}
+				}
+			} else {
+				// Broadcast to all connected clients
+				for c := range h.connections {
+					select {
+					case c.send <- body:
+					default:
+						close(c.send)
+						delete(h.connections, c)
+					}
 				}
 			}
 		}

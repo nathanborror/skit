@@ -28,9 +28,11 @@ var upgrader = websocket.Upgrader{
 
 // connection is an middleman between the websocket connection and the hub.
 type connection struct {
-	ws   *websocket.Conn // The websocket connection.
-	send chan []byte     // Buffered channel of outbound messages.
-	User *users.User
+	ws     *websocket.Conn // The websocket connection.
+	send   chan []byte     // Buffered channel of outbound messages.
+	User   *users.User
+	Cookie *http.Cookie
+	Cursor string
 }
 
 // wsRequest
@@ -117,8 +119,11 @@ func socketHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 
+	// Grab cookie
+	cookie, _ := r.Cookie("authenticated-user")
+
 	// Create connection
-	c := &connection{send: make(chan []byte, 256), ws: ws, User: u}
+	c := &connection{send: make(chan []byte, 256), ws: ws, User: u, Cookie: cookie}
 	h.register <- c
 	go c.writePump()
 	c.readPump()

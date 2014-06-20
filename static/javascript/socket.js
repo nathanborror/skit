@@ -15,7 +15,7 @@ window.State = {
   history: [],
 
   goto: function(url, user) {
-    this.history.push({'url': url});
+    this.history.push({'url': url, 'op': 0});
     this.refresh();
   },
 
@@ -27,9 +27,13 @@ window.State = {
   refresh: function() {
     var payload = JSON.stringify(this.current());
     window.SOCKET.send(payload);
+    window.history.pushState({}, "", this.current().url);
   },
 
   current: function() {
+    if (this.history.length == 0) {
+      return {'url': '/', 'op': 0};
+    }
     return this.history[this.history.length-1];
   }
 };
