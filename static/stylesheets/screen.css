@@ -44,6 +44,8 @@ button { display: inline-block; float: right; margin: 0; padding: 12px 32px; bor
 .ui-item .ui-item-delete { display: none; position: absolute; top: 14px; left: 0; color: #E7808D !important; }
 .ui-item:hover .ui-item-delete { display: block; }
 
+.ui-item-child { font-size: 12px; color: #999; }
+
 footer { text-align: center; font-size: 14px;}
 footer a { color: #ccc; }
 /*

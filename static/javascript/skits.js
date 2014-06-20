@@ -14,9 +14,14 @@ var Skit = React.createClass({
     return false;
   },
   render: function() {
+    var root = <span></span>;
+    if (this.props.root != this.props.hash) {
+      root = <span className="ui-item-child">(Child)</span>;
+    }
+
     return (
       <div className="ui-item" style={{"border-color": handleColor(this.props.user)}}>
-        <a href="#" onClick={this.handleClick}>{this.props.children}</a>
+        <a href="#" onClick={this.handleClick}>{this.props.children}</a> {root}
         <a className="ui-item-delete" href="#" onClick={this.handleDelete}>x</a>
       </div>
     );
@@ -27,7 +32,7 @@ var SkitList = React.createClass({
   render: function() {
     if (!this.props.data) return (<div></div>);
     var skitNodes = this.props.data.map(function(skit) {
-      return <Skit key={skit.hash} hash={skit.hash} user={skit.user}>{skit.text}</Skit>;
+      return <Skit key={skit.hash} hash={skit.hash} user={skit.user} root={skit.root}>{skit.text}</Skit>;
     });
     return (
       <div className="ui-list">
@@ -41,9 +46,10 @@ var SkitForm = React.createClass({
   handleSubmit: function() {
     var hash = this.refs.hash.getDOMNode().value.trim();
     var parent = this.refs.parent.getDOMNode().value.trim();
+    var root = this.refs.root.getDOMNode().value.trim();
     var text = this.refs.text.getDOMNode().value.trim();
 
-    this.props.onSubmit({hash: hash, parent: parent, text: text});
+    this.props.onSubmit({hash: hash, parent: parent, root: root, text: text});
     this.refs.hash.getDOMNode().value = '';
     this.refs.text.getDOMNode().value = '';
     return false;
