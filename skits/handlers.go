@@ -76,6 +76,7 @@ func SaveHandler(w http.ResponseWriter, r *http.Request) {
 
 	hash := r.FormValue("hash")
 	parent := r.FormValue("parent")
+	root := r.FormValue("root")
 	user := session.Values["hash"].(string)
 	text := r.FormValue("text")
 
@@ -83,7 +84,11 @@ func SaveHandler(w http.ResponseWriter, r *http.Request) {
 		hash = GenerateSkitHash(text)
 	}
 
-	s := &Skit{Hash: hash, Parent: parent, User: user, Text: text}
+	if root == "" {
+		root = hash
+	}
+
+	s := &Skit{Hash: hash, Parent: parent, Root: root, User: user, Text: text}
 	err := repo.Save(s)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

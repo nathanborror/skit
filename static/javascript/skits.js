@@ -50,11 +50,13 @@ var SkitForm = React.createClass({
   },
   render: function() {
     var hash = this.props.parent ? this.props.parent.hash : "";
+    var root = this.props.parent ? this.props.parent.root : "";
     return (
       <form className="ui-form" onSubmit={this.handleSubmit}>
         <input type="text" ref="text" placeholder="What are you thinking about?" />
         <input type="hidden" ref="hash" value="" />
         <input type="hidden" ref="parent" value={hash} />
+        <input type="hidden" ref="root" value={root} />
         <button type="submit" className="hidden">Save</button>
       </form>
     );

@@ -6,6 +6,7 @@ import "time"
 type Skit struct {
 	Hash     string    `json:"hash"`
 	Parent   string    `json:"parent"`
+	Root     string    `json:"root"`
 	User     string    `json:"user"`
 	Text     string    `json:"text"`
 	Created  time.Time `json:"created"`
