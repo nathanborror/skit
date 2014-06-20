@@ -13,27 +13,47 @@ import (
 var store = sessions.NewCookieStore([]byte("something-very-very-secret"))
 var repo = NewSqlUserRepository("db.sqlite3")
 
+// GeneratePasswordHash returns a hashed password
+func GeneratePasswordHash(password string) (hash string) {
+	hasher := md5.New()
+	io.WriteString(hasher, password)
+	return fmt.Sprintf("%x", hasher.Sum(nil))
+}
+
+// GenerateUserHash returns a hash that represents a unique user ID
+func GenerateUserHash(s string) (hash string) {
+	hasher := fnv.New32a()
+	io.WriteString(hasher, s)
+	return fmt.Sprintf("%x", hasher.Sum(nil))
+}
+
+// Authenticate authenticates and returns a user object
+func Authenticate(email string, password string, w http.ResponseWriter, r *http.Request) (user *User) {
+	hash := GeneratePasswordHash(password)
+	u, err := repo.LoadWithPassword(email, hash)
+	if err != nil {
+		return nil
+	}
+
+	// Update session
+	if (w != nil && r != nil) {
+		session, _ := store.Get(r, "authenticated-user")
+		session.Values["hash"] = u.Hash
+		session.Save(r, w)
+	}
+
+	return u
+}
+
 // SigninViewHandler signs a user in
 func SigninViewHandler(w http.ResponseWriter, r *http.Request) {
-	session, _ := store.Get(r, "authenticated-user")
-
 	if r.Method == "POST" {
 		email := r.FormValue("email")
 		password := r.FormValue("password")
-
-		// Generate password hash
-		hasher := md5.New()
-		io.WriteString(hasher, password)
-		passwordHash := fmt.Sprintf("%x", hasher.Sum(nil))
-
-		u, err := repo.LoadWithPassword(email, string(passwordHash))
-		if err != nil {
+		u := Authenticate(email, password, w, r)
+		if u == nil {
 			http.Redirect(w, r, "/signin", http.StatusFound)
-			return
 		}
-
-		session.Values["hash"] = u.Hash
-		session.Save(r, w)
 
 		http.Redirect(w, r, "/", http.StatusFound)
 	}
@@ -52,31 +72,35 @@ func SignoutViewHandler(w http.ResponseWriter, r *http.Request) {
 // RegisterViewHandler registers a new user
 func RegisterViewHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
+		name := r.FormValue("name")
 		email := r.FormValue("email")
 		password := r.FormValue("password")
-		name := r.FormValue("name")
 
 		if email == "" && password == "" {
 			http.Redirect(w, r, "/register", http.StatusFound)
 		}
 
-		// Generate password hash
-		hasher := md5.New()
-		io.WriteString(hasher, password)
-		passwordHash := fmt.Sprintf("%x", hasher.Sum(nil))
+		hash := GenerateUserHash(email)
+		passwordHash := GeneratePasswordHash(password)
 
-		// Generate hash
-		hasher = fnv.New32a()
-		io.WriteString(hasher, email)
-		hash := fmt.Sprintf("%x", hasher.Sum(nil))
+		// If user already exists, sign them in and send them to '/'
+		u := Authenticate(email, password, w, r)
+		if u != nil {
+			http.Redirect(w, r, "/", http.StatusFound)
+			return
+		}
 
-		u := &User{Email: email, Password: string(passwordHash), Hash: hash, Name: name}
+		u = &User{Email: email, Password: passwordHash, Hash: hash, Name: name}
 		err := repo.Save(u)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		http.Redirect(w, r, "/signin", http.StatusFound)
+
+		// Auth user and redirect them to '/'
+		u = Authenticate(email, password, w, r)
+		http.Redirect(w, r, "/", http.StatusFound)
+		return
 	}
 
 	render.RenderTemplate(w, "user_register", nil)

@@ -80,7 +80,7 @@ func (h *hub) run() {
 				log.Println(err)
 			}
 
-			if obj.Op == Request  {
+			if obj.Op == Request {
 				// Only send to clients with cursors on the request URL
 				for c := range h.connections {
 					// if r.connection.User == c.User {

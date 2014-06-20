@@ -9,11 +9,20 @@ import (
 	"github.com/nathanborror/skit/users"
 	"io"
 	"net/http"
+	"time"
 )
 
 var store = sessions.NewCookieStore([]byte("something-very-very-secret"))
 var repo = NewSqlSkitRepository("db.sqlite3")
 var userRepo = users.NewSqlUserRepository("db.sqlite3")
+
+// GenerateSkitHash returns a hash
+func GenerateSkitHash(s string) (hash string) {
+	time := time.Now().String()
+	hasher := md5.New()
+	io.WriteString(hasher, s+time)
+	return fmt.Sprintf("%x", hasher.Sum(nil))
+}
 
 // ViewHandler displays a skit
 func ViewHandler(w http.ResponseWriter, r *http.Request) {
@@ -71,9 +80,7 @@ func SaveHandler(w http.ResponseWriter, r *http.Request) {
 	text := r.FormValue("text")
 
 	if hash == "" {
-		m := md5.New()
-		io.WriteString(m, text)
-		hash = fmt.Sprintf("%x", m.Sum(nil))
+		hash = GenerateSkitHash(text)
 	}
 
 	s := &Skit{Hash: hash, Parent: parent, User: user, Text: text}
