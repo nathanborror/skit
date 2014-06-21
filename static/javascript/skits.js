@@ -14,14 +14,9 @@ var Skit = React.createClass({
     return false;
   },
   render: function() {
-    var root = <span></span>;
-    if (this.props.root != this.props.hash) {
-      root = <span className="ui-item-child">(Child)</span>;
-    }
-
     return (
       <div className="ui-item" style={{"border-color": handleColor(this.props.user)}}>
-        <a href="#" onClick={this.handleClick}>{this.props.children}</a> {root}
+        <a href="#" onClick={this.handleClick}>{this.props.children}</a>
         <a className="ui-item-delete" href="#" onClick={this.handleDelete}>x</a>
       </div>
     );
