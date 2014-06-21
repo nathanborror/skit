@@ -15,7 +15,7 @@ window.State = {
   history: [],
 
   goto: function(url, user) {
-    this.history.push({'url': url, 'op': 0});
+    this.history.push({'url': url});
     this.refresh();
   },
 
@@ -32,7 +32,7 @@ window.State = {
 
   current: function() {
     if (this.history.length == 0) {
-      return {'url': '/', 'op': 0};
+      return {'url': '/'};
     }
     return this.history[this.history.length-1];
   }

@@ -28,20 +28,9 @@ var h = hub{
 	connections: make(map[*connection]bool),
 }
 
-// Op represents 'broadcast' or 'request'
-type Op int
-
-const (
-	// Request means we only update the client making the request
-	Request Op = iota
-	// Broadcast means we update all connected clients
-	Broadcast
-)
-
 // Message expects a url and an operation (request or broadcast)
 type Message struct {
 	URL string
-	Op  Op
 }
 
 func (h *hub) run() {
@@ -80,38 +69,26 @@ func (h *hub) run() {
 				log.Println(err)
 			}
 
-			if obj.Op == Request {
-				// Only send to clients with cursors on the request URL
-				for c := range h.connections {
-					// if r.connection.User == c.User {
-					if c.Cursor == obj.URL {
-						if obj.URL != "/" {
+			// Only send to clients with cursors on the request URL
+			for c := range h.connections {
+				// if r.connection.User == c.User {
+				if c.Cursor == obj.URL {
+					if obj.URL != "/" {
+						select {
+						case c.send <- body:
+						default:
+							close(c.send)
+							delete(h.connections, c)
+						}
+					} else {
+						if c.User == r.connection.User {
 							select {
 							case c.send <- body:
 							default:
 								close(c.send)
 								delete(h.connections, c)
 							}
-						} else {
-							if c.User == r.connection.User {
-								select {
-								case c.send <- body:
-								default:
-									close(c.send)
-									delete(h.connections, c)
-								}
-							}
 						}
-					}
-				}
-			} else {
-				// Broadcast to all connected clients
-				for c := range h.connections {
-					select {
-					case c.send <- body:
-					default:
-						close(c.send)
-						delete(h.connections, c)
 					}
 				}
 			}
