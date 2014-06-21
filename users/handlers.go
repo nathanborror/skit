@@ -36,7 +36,7 @@ func Authenticate(email string, password string, w http.ResponseWriter, r *http.
 	}
 
 	// Update session
-	if (w != nil && r != nil) {
+	if w != nil && r != nil {
 		session, _ := store.Get(r, "authenticated-user")
 		session.Values["hash"] = u.Hash
 		session.Save(r, w)
