@@ -68,7 +68,6 @@ type wsResponse struct {
 
 func (h *hub) sendToChannel(channel string, message []byte) {
 	// Only send to clients subscribed to the request URL
-	log.Printf("SUBSCRIPTIONS: %s", h.subscriptions)
 	subscriptions, ok := h.subscriptions[channel]
 	if !ok {
 		log.Printf("No subscriptions for '%s'\n", channel)
@@ -83,7 +82,6 @@ func (h *hub) sendToChannel(channel string, message []byte) {
 	if err != nil {
 		log.Println("Error marshalling channel message:", err)
 	}
-	log.Println(string(body))
 	for c := range subscriptions {
 		select {
 		case c.send <- body:
@@ -98,7 +96,6 @@ func (h *hub) sendToChannel(channel string, message []byte) {
 func (h *hub) handleMessage(conn *connection, m Message) {
 	switch m.Action {
 	case Subscribe:
-		log.Printf("Subscribing to %s", m.URL)
 		h.subscriptions.add(m.URL, conn)
 		log.Println("Adding subscription to", m.URL, "for", conn.User.Hash)
 
