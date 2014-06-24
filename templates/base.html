@@ -19,10 +19,18 @@
   {{end}}
 {{end}}
 
-{{define "footer"}}
+{{define "people"}}
   <footer>
     {{range $key, $value := .}}
     <a class="ui-head" href="/u/{{$key.User.Hash}}" data-hash="{{$key.User.Hash}}">{{$key.User.Name | initials}}</a>
+    {{end}}
+  </footer>
+{{end}}
+
+{{define "footer"}}
+  <footer>
+    {{if .session}}
+    <a class="ui-signout" href="/signout">Sign out</a>
     {{end}}
   </footer>
 {{end}}

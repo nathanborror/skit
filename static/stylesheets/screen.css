@@ -48,6 +48,9 @@ button { display: inline-block; float: right; margin: 0; padding: 12px 32px; bor
 footer { text-align: center; font-size: 14px;}
 footer a { color: #ccc; }
 
+.ui-signout { position: absolute; bottom: 32px; right: 32px; padding: 8px 24px; background: #fff; border: 1px solid #ddd; border-radius: 4px; color: #ccc; }
+.ui-signout:hover { background-color: #4A90E2; color: #fff; border-color: #4A90E2; text-decoration: none; }
+
 /*
 footer { position: fixed; bottom: 0px; left: 0px; right: 0px; padding: 8px; background: #f9f9f9; border-top: 1px solid #ddd; font-size: 14px; text-align: center; color: rgba(0,0,0,.3); }
 footer a { color: rgba(0,0,0,.3); }
