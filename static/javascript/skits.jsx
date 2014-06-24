@@ -88,12 +88,12 @@ var SkitBox = React.createClass({
   },
   handleMessage: function(data) {
     this.setState({data: data});
+    window.history.pushState({}, data.skit.text, this.props.url);
   },
   componentWillMount: function() {
     var url = this.props.url;
     window.SOCKET.subscribe(url, this.handleMessage);
     window.SOCKET.request(url);
-    window.history.pushState({}, "", url);
   },
   getInitialState: function() {
     return {data: {}};
