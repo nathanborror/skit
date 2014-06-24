@@ -33,8 +33,9 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, "authenticated-user")
 	user := session.Values["hash"]
 	if user == nil {
-		http.Redirect(w, r, "/signin", http.StatusFound)
-		return
+		user = ""
+	} else {
+		user = user.(string)
 	}
 
 	// Load the skit
@@ -51,10 +52,9 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render.Render(w, r, "skit_view", map[string]interface{}{
-		"session":  user.(string),
+		"session":  user,
 		"skit":     s,
 		"children": c,
-		// "connections": h.connections,
 	})
 }
 
