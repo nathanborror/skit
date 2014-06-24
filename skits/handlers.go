@@ -29,6 +29,14 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	hash := vars["hash"]
 
+	// get logged in user
+	session, _ := store.Get(r, "authenticated-user")
+	user := session.Values["hash"]
+	if user == nil {
+		http.Redirect(w, r, "/signin", http.StatusFound)
+		return
+	}
+
 	// Load the skit
 	s, err := repo.Load(hash)
 	if err != nil {
@@ -43,6 +51,7 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render.Render(w, r, "skit_view", map[string]interface{}{
+		"session":  user.(string),
 		"skit":     s,
 		"children": c,
 		// "connections": h.connections,

@@ -26,20 +26,20 @@ func init() {
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, "authenticated-user")
-	hash := session.Values["hash"]
-	if hash == nil {
+	user := session.Values["hash"]
+	if user == nil {
 		http.Redirect(w, r, "/signin", http.StatusFound)
 		return
 	}
 
-	s, err := skitRepo.ListWithUser(hash.(string))
+	s, err := skitRepo.ListWithUser(user.(string))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	render.Render(w, r, "home", map[string]interface{}{
-		"session":  hash.(string),
+		"session":  user.(string),
 		"skit":     "",
 		"children": s,
 		// "connections": h.connections,
