@@ -9,7 +9,7 @@ article:after, footer:after { content: "."; display: block; height: 0; clear: bo
 
 form { position: relative; }
 
-fieldset { padding: 32px; background: #f9f9f9; font-size: 20px; border-radius: 6px; border: 1px solid #ddd;
+fieldset { margin: 0 auto; padding: 32px; max-width: 512px; background: #f9f9f9; font-size: 20px; border-radius: 6px; border: 1px solid #ddd;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .1);}
 fieldset input { font-size: 20px; border-radius: 4px; border: 1px solid #ddd; }
 
