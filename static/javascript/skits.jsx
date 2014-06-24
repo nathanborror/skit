@@ -4,7 +4,10 @@
 
 var Skit = React.createClass({
   handleDelete: function() {
-    $.get('/s/'+this.props.hash+'/delete');
+    var url = '/s/'+this.props.parent;
+    $.get('/s/'+this.props.hash+'/delete', function(e) {
+      window.SOCKET.request(url);
+    });
     this.setState({visible: false});
     return false;
   },
@@ -33,6 +36,7 @@ var SkitList = React.createClass({
       return <Skit
         key={skit.hash}
         hash={skit.hash}
+        parent={skit.parent}
         user={skit.user}
         pushSkitBox={pushSkitBox}
         root={skit.root}>{skit.text}</Skit>;
@@ -83,6 +87,7 @@ var SkitBox = React.createClass({
       // replace skit with real skit
       current.children[0] = data.skit;
       this.setState({data: current});
+      window.SOCKET.request(this.props.url);
     }.bind(this));
     return false;
   },
