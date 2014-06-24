@@ -12,7 +12,8 @@ var Skit = React.createClass({displayName: 'Skit',
     return false;
   },
   handleClick: function() {
-    this.props.pushSkitBox('/s/'+this.props.hash);
+    var url = '/s/'+this.props.hash;
+    this.props.pushSkitBox(url);
     return false;
   },
   getInitialState: function() {
@@ -93,7 +94,7 @@ var SkitBox = React.createClass({displayName: 'SkitBox',
   },
   handleMessage: function(data) {
     this.setState({data: data});
-    window.history.pushState({}, data.skit.text, this.props.url);
+    window.history.pushState({}, "", this.props.url);
   },
   componentWillMount: function() {
     var url = this.props.url;
@@ -143,20 +144,18 @@ var SkitBoxes = React.createClass({displayName: 'SkitBoxes',
     return {urls: []};
   },
   render: function() {
-    var self = this;
     var boxes = this.state.urls.map(function(url) {
       var b = SkitBox(
         {key:url,
         url:url,
-        pushSkitBox:self.pushSkitBox,
-        popSkitBox:self.popSkitBox} );
-      root = false;
+        pushSkitBox:this.pushSkitBox,
+        popSkitBox:this.popSkitBox} );
       return b;
-    });
+    }.bind(this));
 
     // force to last item
     return (
-      React.DOM.div( {className:"ui-skit-list"}, boxes)
+      React.DOM.div( {key:'skits', className:"ui-skit-list"}, boxes)
     );
   }
 });
