@@ -31,19 +31,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/signin", http.StatusFound)
 		return
 	}
-
-	s, err := skitRepo.ListWithUser(user.(string))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	render.Render(w, r, "home", map[string]interface{}{
-		"session":  user.(string),
-		"skit":     "",
-		"children": s,
-		// "connections": h.connections,
-	})
+	http.Redirect(w, r, "/u/"+user.(string), http.StatusFound)
 }
 
 func userHomeHandler(w http.ResponseWriter, r *http.Request) {
@@ -57,11 +45,10 @@ func userHomeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	render.Render(w, r, "home", map[string]interface{}{
+	render.Render(w, r, "user_view", map[string]interface{}{
 		"session":  session.Values["hash"],
 		"skit":     "",
 		"children": s,
-		// "connections": h.connections,
 	})
 }
 
