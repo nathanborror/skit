@@ -14,4 +14,6 @@ $(function() {
     var color = handleColor(user.data('hash'));
     user.css('background', color);
   });
+
+  $('.ux-focus').focus();
 });

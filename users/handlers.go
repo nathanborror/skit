@@ -3,11 +3,12 @@ package users
 import (
 	"crypto/md5"
 	"fmt"
-	"github.com/gorilla/sessions"
-	"github.com/nathanborror/skit/render"
 	"hash/fnv"
 	"io"
 	"net/http"
+
+	"github.com/gorilla/sessions"
+	"github.com/nathanborror/skit/render"
 )
 
 var store = sessions.NewCookieStore([]byte("something-very-very-secret"))
@@ -52,7 +53,10 @@ func SigninViewHandler(w http.ResponseWriter, r *http.Request) {
 		password := r.FormValue("password")
 		u := Authenticate(email, password, w, r)
 		if u == nil {
-			http.Redirect(w, r, "/signin", http.StatusFound)
+			u = &User{Email: email}
+			render.RenderTemplate(w, "user_register", map[string]interface{}{
+				"user": u,
+			})
 			return
 		}
 		http.Redirect(w, r, "/", http.StatusFound)
