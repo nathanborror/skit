@@ -105,7 +105,7 @@ var SkitBox = React.createClass({displayName: 'SkitBox',
   },
   render: function() {
     return (
-      React.DOM.div(null, 
+      React.DOM.div( {className:"ui-skit"}, 
         React.DOM.article(null, 
           SkitForm( {onSubmit:this.handleSubmit, parent:this.state.data.skit} ),
           SkitList(
@@ -156,7 +156,7 @@ var SkitBoxes = React.createClass({displayName: 'SkitBoxes',
 
     // force to last item
     return (
-      React.DOM.div(null, boxes)
+      React.DOM.div( {className:"ui-skit-list"}, boxes)
     );
   }
 });

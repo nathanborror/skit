@@ -105,7 +105,7 @@ var SkitBox = React.createClass({
   },
   render: function() {
     return (
-      <div>
+      <div className="ui-skit">
         <article>
           <SkitForm onSubmit={this.handleSubmit} parent={this.state.data.skit} />
           <SkitList
@@ -156,7 +156,7 @@ var SkitBoxes = React.createClass({
 
     // force to last item
     return (
-      <div>{boxes}</div>
+      <div className="ui-skit-list">{boxes}</div>
     );
   }
 });
