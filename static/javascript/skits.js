@@ -131,11 +131,16 @@ var SkitBoxes = React.createClass({
     window.SOCKET.onopen = function() {
       self.setState({urls: self.props.urls});
     };
+
+    // listen to browser back button
+    window.addEventListener('popstate', this.popSkitBox);
+
     return {urls: []};
   },
   render: function() {
     var root = true;
     var self = this;
+
     var boxes = this.state.urls.map(function(url) {
       var b = <SkitBox
         key={url}
@@ -146,6 +151,7 @@ var SkitBoxes = React.createClass({
       root = false;
       return b;
     });
+
     // force to last item
     return (
       <div>{boxes}</div>
