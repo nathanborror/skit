@@ -5,19 +5,23 @@
 var Skit = React.createClass({
   handleDelete: function() {
     $.get('/s/'+this.props.hash+'/delete');
+    this.setState({visible: false});
     return false;
   },
   handleClick: function() {
     this.props.pushSkitBox('/s/'+this.props.hash);
     return false;
   },
+  getInitialState: function() {
+    return {visible: true};
+  },
   render: function() {
-    return (
+    return this.state.visible ? (
       <div className="ui-item" style={{"border-color": handleColor(this.props.user)}}>
         <a href="#" onClick={this.handleClick}>{this.props.children}</a>
         <a className="ui-item-delete" href="#" onClick={this.handleDelete}>x</a>
       </div>
-    );
+    ) : (<span />);
   }
 });
 
@@ -70,12 +74,15 @@ var SkitForm = React.createClass({
 
 var SkitBox = React.createClass({
   handleSubmit: function(skit) {
-    var skits = this.state.data;
-    var newSkits = [skit].concat(skits);
-    this.setState({data: newSkits});
+    // optimisticly add skit
+    var current = this.state.data;
+    current.children.unshift(skit);
+    this.setState({data: current});
 
     $.post('/s/save', skit, function(data) {
-      window.SOCKET.request(this.props.url);
+      // replace skit with real skit
+      current.children[0] = data.skit;
+      this.setState({data: current});
     }.bind(this));
     return false;
   },
@@ -131,6 +138,7 @@ var SkitBoxes = React.createClass({
     var self = this;
     var boxes = this.state.urls.map(function(url) {
       var b = <SkitBox
+        key={url}
         isRoot={root}
         url={url}
         pushSkitBox={self.pushSkitBox}
