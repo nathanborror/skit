@@ -138,13 +138,10 @@ var SkitBoxes = React.createClass({
     return {urls: []};
   },
   render: function() {
-    var root = true;
     var self = this;
-
     var boxes = this.state.urls.map(function(url) {
       var b = <SkitBox
         key={url}
-        isRoot={root}
         url={url}
         pushSkitBox={self.pushSkitBox}
         popSkitBox={self.popSkitBox} />;
