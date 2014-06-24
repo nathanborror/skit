@@ -73,6 +73,6 @@ func (r *sqlSkitRepository) ListWithParent(parent string) ([]*Skit, error) {
 
 func (r *sqlSkitRepository) ListWithUser(user string) ([]*Skit, error) {
 	obj := []*Skit{}
-	err := r.dbmap.Select(&obj, "SELECT DISTINCT * FROM skit WHERE hash IN (SELECT DISTINCT root FROM skit WHERE user = ?)", user)
+	err := r.dbmap.Select(&obj, "SELECT DISTINCT * FROM skit WHERE hash IN (SELECT DISTINCT root FROM skit WHERE user = ?) ORDER BY modified DESC", user)
 	return obj, err
 }
