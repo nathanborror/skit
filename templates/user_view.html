@@ -13,12 +13,10 @@
 
 {{template "footer" .}}
 
-<script type="text/jsx" src="/static/javascript/skits.js"></script>
-<script type="text/jsx">
-  /** @jsx React.DOM */
-  React.renderComponent(
-    <SkitBoxes urls={[window.location.pathname]} />,
-      document.getElementById('content'));
+<script type="text/javascript" src="/static/javascript/build/skits.js"></script>
+<script type="text/javascript">
+  React.renderComponent(SkitBoxes({urls: [window.location.pathname]}),
+    document.getElementById('content'));
 </script>
 
 </body>
