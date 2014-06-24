@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
+	"net/http"
+	"os"
+
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/nathanborror/skit/render"
 	"github.com/nathanborror/skit/skits"
 	"github.com/nathanborror/skit/users"
-	"net/http"
-	"os"
 )
 
 var store = sessions.NewCookieStore([]byte("something-very-very-secret"))
@@ -64,10 +65,10 @@ func userHomeHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+var r = mux.NewRouter()
+
 func main() {
 	go h.run()
-
-	r := mux.NewRouter()
 
 	// Users
 	r.HandleFunc("/signin", users.SigninViewHandler)

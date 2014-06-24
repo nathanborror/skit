@@ -14,23 +14,125 @@ import (
 // hub maintains the set of active connections and broadcasts messages to the
 // connections.
 type hub struct {
-	connections map[*connection]bool // Registered connections
-	incoming    chan wsRequest       // Inbound messages from the connections
-	register    chan *connection     // Register requests from the connections
-	unregister  chan *connection     // Unregister requests from connections
+	connections   map[*connection]bool // Registered connections
+	incoming      chan wsRequest       // Inbound messages from the connections
+	register      chan *connection     // Register requests from the connections
+	unregister    chan *connection     // Unregister requests from connections
+	subscriptions subscriptions
 }
 
 // h represents a WebSocket hub
 var h = hub{
-	incoming:    make(chan wsRequest),
-	register:    make(chan *connection),
-	unregister:  make(chan *connection),
-	connections: make(map[*connection]bool),
+	incoming:      make(chan wsRequest),
+	register:      make(chan *connection),
+	unregister:    make(chan *connection),
+	connections:   make(map[*connection]bool),
+	subscriptions: subscriptions{},
 }
+
+type subscriptions map[string]map[*connection]bool
+
+func (s subscriptions) add(channel string, c *connection) {
+	if _, ok := s[channel]; !ok {
+		s[channel] = make(map[*connection]bool)
+	}
+	s[channel][c] = true
+}
+
+func (s subscriptions) remove(c *connection) {
+	for _, subs := range s {
+		delete(subs, c)
+	}
+}
+
+// Action represents...
+type Action string
+
+const (
+	// Request represents ...
+	Request Action = "request"
+	// Subscribe represents ...
+	Subscribe = "subscribe"
+)
 
 // Message expects a url and an operation (request or broadcast)
 type Message struct {
-	URL string
+	URL    string
+	Action Action
+}
+
+type wsResponse struct {
+	Channel string
+	Data    *json.RawMessage
+}
+
+func (h *hub) sendToChannel(channel string, message []byte) {
+	// Only send to clients subscribed to the request URL
+	log.Printf("SUBSCRIPTIONS: %s", h.subscriptions)
+	subscriptions, ok := h.subscriptions[channel]
+	if !ok {
+		log.Printf("No subscriptions for '%s'\n", channel)
+		return
+	}
+	toWrap := json.RawMessage(message)
+	m := wsResponse{
+		Channel: channel,
+		Data:    &toWrap,
+	}
+	body, err := json.Marshal(m)
+	if err != nil {
+		log.Println("Error marshalling channel message:", err)
+	}
+	log.Println(string(body))
+	for c := range subscriptions {
+		select {
+		case c.send <- body:
+		default:
+			close(c.send)
+			delete(subscriptions, c)
+			delete(h.connections, c)
+		}
+	}
+}
+
+func (h *hub) handleMessage(conn *connection, m Message) {
+	switch m.Action {
+	case Subscribe:
+		log.Printf("Subscribing to %s", m.URL)
+		h.subscriptions.add(m.URL, conn)
+		log.Println("Adding subscription to", m.URL, "for", conn.User.Hash)
+
+	// Request actions perform an internal GET request and send the results to
+	// all subscribed clients
+	case Request:
+		req, err := http.NewRequest("GET", "http://localhost:8080"+m.URL, nil)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		// Add cookie
+		req.AddCookie(conn.Cookie)
+
+		// TODO: Replace this with a "the better way" referenced in
+		// render.go and update here
+		req.Header.Add("X-Requested-With", "XMLHttpRequest")
+
+		// Make request
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		// Get the body of the response
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		log.Println(string(body))
+		h.sendToChannel(m.URL, body)
+	}
 }
 
 func (h *hub) run() {
@@ -41,57 +143,12 @@ func (h *hub) run() {
 		case c := <-h.unregister:
 			delete(h.connections, c)
 			close(c.send)
+			h.subscriptions.remove(c)
 		case r := <-h.incoming:
-			var obj Message
-			json.Unmarshal(r.message, &obj)
-
-			req, err := http.NewRequest("GET", "http://localhost:8080"+obj.URL, nil)
-
-			// Update cursor
-			r.connection.Cursor = obj.URL
-
-			// Add cookie
-			req.AddCookie(r.connection.Cookie)
-
-			// TODO: Replace this with "the better way" referenced in
-			// render.go and update here.
-			req.Header.Add("X-Requested-With", "XMLHttpRequest")
-
-			// Make request
-			resp, err := http.DefaultClient.Do(req)
-			if err != nil {
-				log.Println(err)
-			}
-
-			// Get the body of the response
-			body, err := ioutil.ReadAll(resp.Body)
-			if err != nil {
-				log.Println(err)
-			}
-
-			// Only send to clients with cursors on the request URL
-			for c := range h.connections {
-				// if r.connection.User == c.User {
-				if c.Cursor == obj.URL {
-					if obj.URL != "/" {
-						select {
-						case c.send <- body:
-						default:
-							close(c.send)
-							delete(h.connections, c)
-						}
-					} else {
-						if c.User == r.connection.User {
-							select {
-							case c.send <- body:
-							default:
-								close(c.send)
-								delete(h.connections, c)
-							}
-						}
-					}
-				}
-			}
+			var m Message
+			// TODO: handle unmarshalling errors
+			json.Unmarshal(r.message, &m)
+			h.handleMessage(r.connection, m)
 		}
 	}
 }

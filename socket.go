@@ -5,11 +5,12 @@
 package main
 
 import (
-	"github.com/gorilla/websocket"
-	"github.com/nathanborror/skit/users"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/gorilla/websocket"
+	"github.com/nathanborror/skit/users"
 )
 
 var userRepo = users.NewSqlUserRepository("db.sqlite3")
@@ -32,7 +33,6 @@ type connection struct {
 	send   chan []byte     // Buffered channel of outbound messages.
 	User   *users.User
 	Cookie *http.Cookie
-	Cursor string
 }
 
 // wsRequest

@@ -4,13 +4,11 @@
 
 var Skit = React.createClass({
   handleDelete: function() {
-    $.get('/s/'+this.props.hash+'/delete', function(data) {
-      window.State.refresh();
-    });
+    $.get('/s/'+this.props.hash+'/delete');
     return false;
   },
   handleClick: function() {
-    window.State.goto('/s/'+this.props.hash);
+    this.props.pushSkitBox('/s/'+this.props.hash);
     return false;
   },
   render: function() {
@@ -26,8 +24,14 @@ var Skit = React.createClass({
 var SkitList = React.createClass({
   render: function() {
     if (!this.props.data) return (<div></div>);
+    var pushSkitBox = this.props.pushSkitBox;
     var skitNodes = this.props.data.map(function(skit) {
-      return <Skit key={skit.hash} hash={skit.hash} user={skit.user} root={skit.root}>{skit.text}</Skit>;
+      return <Skit
+        key={skit.hash}
+        hash={skit.hash}
+        user={skit.user}
+        pushSkitBox={pushSkitBox}
+        root={skit.root}>{skit.text}</Skit>;
     });
     return (
       <div className="ui-list">
@@ -64,63 +68,79 @@ var SkitForm = React.createClass({
   }
 });
 
-var SkitHeader = React.createClass({
-  handleBack: function(e) {
-    window.State.back();
-    return false;
-  },
-  render: function() {
-    if (!this.props.data) {
-      return (
-        <header>
-          <h1>Skit</h1>
-        </header>
-      )
-    }
-    return (
-      <header>
-        <a className="ui-back" href="#" onClick={this.handleBack}>Back</a>
-        <h1>Skit {this.props.data.text}</h1>
-      </header>
-    )
-  }
-});
-
 var SkitBox = React.createClass({
   handleSubmit: function(skit) {
     var skits = this.state.data;
     var newSkits = [skit].concat(skits);
-
     this.setState({data: newSkits});
 
     $.post('/s/save', skit, function(data) {
-      window.State.refresh();
+      window.SOCKET.request(this.props.url);
     }.bind(this));
     return false;
   },
-  handleMessage: function(e) {
-    var data = JSON.parse(e.data)
+  handleMessage: function(data) {
     this.setState({data: data});
   },
   componentWillMount: function() {
     var url = this.props.url;
-    window.SOCKET.onmessage = this.handleMessage;
-    window.SOCKET.onopen = function() {
-      window.State.goto(url);
-    }
+    window.SOCKET.subscribe(url, this.handleMessage);
+    window.SOCKET.request(url);
+    window.history.pushState({}, "", url);
   },
   getInitialState: function() {
-    return {data: []};
+    return {data: {}};
   },
   render: function() {
     return (
       <div>
-        <SkitHeader data={this.state.data.skit} />
         <article>
           <SkitForm onSubmit={this.handleSubmit} parent={this.state.data.skit} />
-          <SkitList data={this.state.data.children} />
+          <SkitList
+            key={this.props.url}
+            data={this.state.data.children}
+            pushSkitBox={this.props.pushSkitBox} />
         </article>
       </div>
+    );
+  }
+});
+
+var SkitBoxes = React.createClass({
+  pushSkitBox: function(url) {
+    this.state.urls.push(url);
+    this.setState(this.state);
+  },
+  popSkitBox: function() {
+    if (this.state.urls.length == 1) {
+      return;
+    }
+    this.state.urls.pop();
+    this.setState(this.state);
+  },
+  getInitialState: function() {
+    // delay setting state until the websocket is open
+    var self = this;
+    window.SOCKET.onopen = function() {
+      self.setState({urls: self.props.urls});
+    };
+    return {urls: []};
+  },
+  render: function() {
+    var root = true;
+    var self = this;
+    var boxes = this.state.urls.map(function(url) {
+      var b = <SkitBox
+        isRoot={root}
+        url={url}
+        pushSkitBox={self.pushSkitBox}
+        popSkitBox={self.popSkitBox} />;
+      root = false;
+      return b;
+    });
+    // force to last item
+    return (
+      <div>{boxes}</div>
     );
   }
 });

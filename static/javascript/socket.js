@@ -1,39 +1,43 @@
-if (window['WebSocket']) {
-  window.SOCKET = new WebSocket("ws://localhost:8080/ws");
-  window.SOCKET.onopen = function(e) {
-    console.log('Connection opened.');
-  };
-  window.SOCKET.onclose = function(e) {
-    console.log('Connection closed.');
-  };
-  window.SOCKET.onmessage = function(e) {
-    console.log('onmessage');
-  };
-}
 
-window.State = {
-  history: [],
+var actionRequest = 'request';
+var actionSubscribe = 'subscribe';
 
-  goto: function(url, user) {
-    this.history.push({'url': url});
-    this.refresh();
-  },
+window.SOCKET = new WebSocket("ws://localhost:8080/ws");
 
-  back: function() {
-    this.history.pop();
-    this.refresh();
-  },
+window.SOCKET.subscriptions = {};
 
-  refresh: function() {
-    var payload = JSON.stringify(this.current());
-    window.SOCKET.send(payload);
-    window.history.pushState({}, "", this.current().url);
-  },
+window.SOCKET.onopen = function(e) {
+  console.log('Connection opened.');
+};
 
-  current: function() {
-    if (this.history.length == 0) {
-      return {'url': '/'};
-    }
-    return this.history[this.history.length-1];
+window.SOCKET.onclose = function(e) {
+  console.log('Connection closed.');
+};
+
+window.SOCKET.onmessage = function(e) {
+  if (!e.data) return;
+
+  var message = JSON.parse(e.data);
+  var channel = message.Channel;
+  var data = message.Data;
+
+  callbacks = window.SOCKET.subscriptions[channel] || [];
+  callbacks.forEach(function(cb) {
+    cb.call(e, data);
+  });
+};
+
+// on registers a callback when a new message on channel `channel` occurs.
+window.SOCKET.subscribe = function(channel, callback) {
+  var payload = JSON.stringify({'url': channel, 'action': actionSubscribe});
+  if (!window.SOCKET.subscriptions[channel]) {
+    window.SOCKET.subscriptions[channel] = [];
   }
+  window.SOCKET.subscriptions[channel].push(callback);
+  window.SOCKET.send(payload);
+};
+
+window.SOCKET.request = function(url) {
+  var payload = JSON.stringify({'url': url, 'action': actionRequest});
+  window.SOCKET.send(payload);
 };
