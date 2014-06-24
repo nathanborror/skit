@@ -101,6 +101,10 @@ var SkitBox = React.createClass({
     window.SOCKET.subscribe(url, this.handleMessage);
     window.SOCKET.request(url);
   },
+  componentWillUnmount: function() {
+    var url = this.props.url;
+    window.SOCKET.unsubscribe(url);
+  },
   getInitialState: function() {
     return {data: {}};
   },

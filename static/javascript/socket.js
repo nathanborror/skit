@@ -37,6 +37,10 @@ window.SOCKET.subscribe = function(channel, callback) {
   window.SOCKET.send(payload);
 };
 
+window.SOCKET.unsubscribe = function(channel) {
+  window.SOCKET.subscriptions[channel].pop();
+}
+
 window.SOCKET.request = function(url) {
   var payload = JSON.stringify({'url': url, 'action': kActionRequest});
   window.SOCKET.send(payload);
