@@ -63,16 +63,15 @@ func main() {
 	r.HandleFunc("/register", auth.RegisterHandler)
 
 	// Skit
-	s := r.PathPrefix("/s").Subrouter()
-	s.HandleFunc("/save", skits.SaveHandler)
-	s.HandleFunc("/new", skits.NewHandler)
-	s.HandleFunc("/{hash:[a-zA-Z0-9-]+}/edit", skits.EditHandler)
-	s.HandleFunc("/{hash:[a-zA-Z0-9-]+}/delete", skits.DeleteHandler)
-	s.HandleFunc("/{hash:[a-zA-Z0-9-]+}", skits.ViewHandler)
+	r.HandleFunc("/s/save", auth.LoginRequired(skits.SaveHandler))
+	r.HandleFunc("/s/new", auth.LoginRequired(skits.NewHandler))
+	r.HandleFunc("/s/{hash:[a-zA-Z0-9-]+}/edit", auth.LoginRequired(skits.EditHandler))
+	r.HandleFunc("/s/{hash:[a-zA-Z0-9-]+}/delete", auth.LoginRequired(skits.DeleteHandler))
+	r.HandleFunc("/s/{hash:[a-zA-Z0-9-]+}", auth.LoginRequired(skits.ViewHandler))
 
-	r.HandleFunc("/u/{hash:[a-zA-Z0-9-]+}", userHomeHandler)
-	r.HandleFunc("/", homeHandler)
 	r.HandleFunc("/ws", hubspoke.SpokeHandler)
+	r.HandleFunc("/u/{hash:[a-zA-Z0-9-]+}", auth.LoginRequired(userHomeHandler))
+	r.HandleFunc("/", auth.LoginRequired(homeHandler))
 
 	http.Handle("/", r)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
