@@ -14,8 +14,8 @@ type sqlSkitRepository struct {
 	dbmap *modl.DbMap
 }
 
-// NewSqlSkitRepository returns a new sqlSkitRepository or panics if it cannot
-func NewSqlSkitRepository(filename string) SkitRepository {
+// SkitSQLRepository returns a new sqlSkitRepository or panics if it cannot
+func SkitSQLRepository(filename string) SkitRepository {
 	db, err := sql.Open("sqlite3", filename)
 	if err != nil {
 		panic("Error connecting to db: " + err.Error())

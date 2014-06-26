@@ -13,7 +13,7 @@
 {{end}}
 
 {{define "signin"}}
-  {{if not .session}}
+  {{if .request|isAuthenticated}}{{else}}
   <a class="ui-signin-button" href="/signin">Sign in</a>
   {{end}}
 {{end}}

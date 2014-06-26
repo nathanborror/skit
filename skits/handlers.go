@@ -1,28 +1,17 @@
 package skits
 
 import (
-	"crypto/md5"
-	"fmt"
+	"net/http"
+
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
-	"github.com/nathanborror/skit/render"
-	"github.com/nathanborror/skit/users"
-	"io"
-	"net/http"
-	"time"
+	"github.com/nathanborror/gommon/auth"
+	"github.com/nathanborror/gommon/render"
 )
 
 var store = sessions.NewCookieStore([]byte("something-very-very-secret"))
-var repo = NewSqlSkitRepository("db.sqlite3")
-var userRepo = users.NewSqlUserRepository("db.sqlite3")
-
-// GenerateSkitHash returns a hash
-func GenerateSkitHash(s string) (hash string) {
-	time := time.Now().String()
-	hasher := md5.New()
-	io.WriteString(hasher, s+time)
-	return fmt.Sprintf("%x", hasher.Sum(nil))
-}
+var repo = SkitSQLRepository("db.sqlite3")
+var userRepo = auth.AuthSQLRepository("db.sqlite3")
 
 // ViewHandler displays a skit
 func ViewHandler(w http.ResponseWriter, r *http.Request) {
