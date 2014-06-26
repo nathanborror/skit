@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/nathanborror/gommon/auth"
+	"github.com/nathanborror/gommon/hubspoke"
 	"github.com/nathanborror/gommon/render"
 	"github.com/nathanborror/skit/skits"
 )
@@ -54,7 +55,7 @@ func userHomeHandler(w http.ResponseWriter, r *http.Request) {
 var r = mux.NewRouter()
 
 func main() {
-	go h.run()
+	go hubspoke.H.Run()
 
 	// Users
 	r.HandleFunc("/login", auth.LoginHandler)
@@ -69,9 +70,9 @@ func main() {
 	s.HandleFunc("/{hash:[a-zA-Z0-9-]+}/delete", skits.DeleteHandler)
 	s.HandleFunc("/{hash:[a-zA-Z0-9-]+}", skits.ViewHandler)
 
-	r.HandleFunc("/ws", socketHandler)
 	r.HandleFunc("/u/{hash:[a-zA-Z0-9-]+}", userHomeHandler)
 	r.HandleFunc("/", homeHandler)
+	r.HandleFunc("/ws", hubspoke.SpokeHandler)
 
 	http.Handle("/", r)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
