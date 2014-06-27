@@ -63,7 +63,7 @@ func EditHandler(w http.ResponseWriter, r *http.Request) {
 func SaveHandler(w http.ResponseWriter, r *http.Request) {
 	user, err := auth.GetAuthenticatedUser(r)
 	if err != nil {
-		http.Redirect(w, r, "/signin", http.StatusFound)
+		http.Redirect(w, r, "/login", http.StatusFound)
 		return
 	}
 
