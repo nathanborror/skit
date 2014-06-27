@@ -94,7 +94,20 @@ func DeleteHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	hash := vars["hash"]
 
-	err := repo.Delete(hash)
+	u, err := auth.GetAuthenticatedUser(r)
+
+	s, err := repo.Load(hash)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if s.User != u.Hash {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = repo.Delete(hash)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
