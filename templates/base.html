@@ -12,10 +12,10 @@
   <script type="text/javascript" src="/static/javascript/main.js"></script>
 {{end}}
 
-{{define "signin"}}
+{{define "login"}}
   {{if .request}}
     {{if .request|isAuthenticated}}{{else}}
-    <a class="ui-signin-button" href="/signin">Sign in</a>
+    <a class="ui-button ui-button-login" href="/login">Sign in</a>
     {{end}}
   {{end}}
 {{end}}
@@ -32,8 +32,12 @@
   <footer>
     {{if .request}}
       {{if .request|isAuthenticated}}
-      <a class="ui-signout" href="/signout">Sign out</a>
+      <a class="ui-button ui-button-logout" href="/logout">Sign out</a>
       {{end}}
     {{end}}
   </footer>
+{{end}}
+
+{{define "home"}}
+  <a href="/" class="ui-button ui-button-home">Go home</a>
 {{end}}

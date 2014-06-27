@@ -50,9 +50,6 @@ button { display: inline-block; float: right; margin: 0; padding: 12px 32px; bor
 footer { text-align: center; font-size: 14px;}
 footer a { color: #ccc; }
 
-.ui-signout { position: absolute; bottom: 32px; right: 32px; padding: 8px 24px; background: none; border: 1px solid rgba(0,0,0,.1); border-radius: 4px; color: rgba(0,0,0,.3); }
-.ui-signout:hover { background-color: #4A90E2; color: #fff; border-color: #4A90E2; text-decoration: none; }
-
 /*
 footer { position: fixed; bottom: 0px; left: 0px; right: 0px; padding: 8px; background: #f9f9f9; border-top: 1px solid #ddd; font-size: 14px; text-align: center; color: rgba(0,0,0,.3); }
 footer a { color: rgba(0,0,0,.3); }
@@ -73,9 +70,18 @@ footer a { color: rgba(0,0,0,.3); }
 header { position: relative; padding: 28px 16px; text-align: center; font-size: 16px; color: #999; }
 header h1 a { color: #999; }
 
-.ui-signin-button { display: block; position: absolute; top: 16px; right: 16px; z-index: 9;
-  padding: 12px 32px; font-size: 14px; background-color: #4A90E2; color: #fff; border-radius: 3px; }
-.ui-signin-button:hover { text-decoration: none; }
+/* Buttons */
+.ui-button { display: block; padding: 12px 32px; font-size: 14px; background-color: #4A90E2; color: #fff; border-radius: 4px; }
+.ui-button:hover { text-decoration: none; }
+
+.ui-button-login { position: absolute; top: 16px; right: 16px; z-index: 9; }
+.ui-button-logout { position: absolute; bottom: 32px; right: 32px; z-index: 9; }
+.ui-button-home { position: absolute; top: 16px; left: 16px; z-index: 9; }
+
+.ui-button-home,
+.ui-button-logout { background: none; border: 1px solid rgba(0,0,0,.1); color: rgba(0,0,0,.3); }
+.ui-button-home:hover,
+.ui-button-logout:hover { background-color: #4A90E2; color: #fff; border-color: #4A90E2; }
 
 .ui-skit-list { position: relative; margin: 0 auto; width: 640px; }
 .ui-skit { position: absolute; top: 0px; left: 0px; padding: 32px; width: 640px; min-height: 640px; background: rgba(255,255,255,1); border: 1px solid rgba(0,0,0,.1); border-radius: 8px; }
@@ -94,5 +100,6 @@ header h1 a { color: #999; }
   .ui-item a { padding: 16px; font-size: 14px; }
   .ui-item .ui-item-delete { display: block; top: 0px; left: auto; right: 0px; }
   input, textarea { margin: 0; font-size: 14px; }
-  .ui-signout { display: none; }
+  .ui-button-home,
+  .ui-button-logout { display: none; }
 }
