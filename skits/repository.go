@@ -8,4 +8,5 @@ type SkitRepository interface {
 	List(limit int) ([]*Skit, error)
 	ListWithParent(parent string) ([]*Skit, error)
 	ListWithUser(user string) ([]*Skit, error)
+	ListParents(hash string) ([]*Skit, error)
 }

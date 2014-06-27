@@ -26,9 +26,11 @@ func init() {
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
-	session, _ := store.Get(r, "authenticated-user")
-	user := session.Values["hash"]
-	http.Redirect(w, r, "/u/"+user.(string), http.StatusFound)
+	user, err := auth.GetAuthenticatedUser(r)
+	if err != nil {
+		http.Redirect(w, r, "/login", http.StatusFound)
+	}
+	http.Redirect(w, r, "/u/"+user.Hash, http.StatusFound)
 }
 
 func userHomeHandler(w http.ResponseWriter, r *http.Request) {
@@ -64,7 +66,6 @@ func main() {
 
 	// Skit
 	r.HandleFunc("/s/save", auth.LoginRequired(skits.SaveHandler))
-	r.HandleFunc("/s/new", auth.LoginRequired(skits.NewHandler))
 	r.HandleFunc("/s/{hash:[a-zA-Z0-9-]+}/edit", auth.LoginRequired(skits.EditHandler))
 	r.HandleFunc("/s/{hash:[a-zA-Z0-9-]+}/delete", auth.LoginRequired(skits.DeleteHandler))
 	r.HandleFunc("/s/{hash:[a-zA-Z0-9-]+}", auth.LoginRequired(skits.ViewHandler))

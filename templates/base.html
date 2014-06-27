@@ -13,8 +13,10 @@
 {{end}}
 
 {{define "signin"}}
-  {{if .request|isAuthenticated}}{{else}}
-  <a class="ui-signin-button" href="/signin">Sign in</a>
+  {{if .request}}
+    {{if .request|isAuthenticated}}{{else}}
+    <a class="ui-signin-button" href="/signin">Sign in</a>
+    {{end}}
   {{end}}
 {{end}}
 
@@ -28,8 +30,10 @@
 
 {{define "footer"}}
   <footer>
-    {{if .session}}
-    <a class="ui-signout" href="/signout">Sign out</a>
+    {{if .request}}
+      {{if .request|isAuthenticated}}
+      <a class="ui-signout" href="/signout">Sign out</a>
+      {{end}}
     {{end}}
   </footer>
 {{end}}

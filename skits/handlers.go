@@ -4,12 +4,10 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/gorilla/sessions"
 	"github.com/nathanborror/gommon/auth"
 	"github.com/nathanborror/gommon/render"
 )
 
-var store = sessions.NewCookieStore([]byte("something-very-very-secret"))
 var repo = SkitSQLRepository("db.sqlite3")
 var userRepo = auth.AuthSQLRepository("db.sqlite3")
 
@@ -18,17 +16,15 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	hash := vars["hash"]
 
-	// get logged in user
-	session, _ := store.Get(r, "authenticated-user")
-	user := session.Values["hash"]
-	if user == nil {
-		user = ""
-	} else {
-		user = user.(string)
-	}
-
 	// Load the skit
 	s, err := repo.Load(hash)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Load parent skits
+	p, err := repo.ListParents(s.Root)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -41,15 +37,11 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render.Render(w, r, "skit_view", map[string]interface{}{
-		"session":  user,
+		"request":  r,
 		"skit":     s,
 		"children": c,
+		"parents":  p,
 	})
-}
-
-// NewHandler creates a new skit
-func NewHandler(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "skit_form", nil)
 }
 
 // EditHandler edits a skit
@@ -57,17 +49,20 @@ func EditHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	hash := vars["hash"]
 
-	b, err := repo.Load(hash)
+	s, err := repo.Load(hash)
 	if err != nil {
-		b = &Skit{Hash: hash}
+		s = &Skit{Hash: hash}
 	}
-	render.RenderTemplate(w, "skit_form", b)
+	render.RenderTemplate(w, "skit_form", map[string]interface{}{
+		"request": r,
+		"skit":    s,
+	})
 }
 
 // SaveHandler saves a skit
 func SaveHandler(w http.ResponseWriter, r *http.Request) {
-	session, _ := store.Get(r, "authenticated-user")
-	if session.Values["hash"] == nil {
+	user, err := auth.GetAuthenticatedUser(r)
+	if err != nil {
 		http.Redirect(w, r, "/signin", http.StatusFound)
 		return
 	}
@@ -75,7 +70,6 @@ func SaveHandler(w http.ResponseWriter, r *http.Request) {
 	hash := r.FormValue("hash")
 	parent := r.FormValue("parent")
 	root := r.FormValue("root")
-	user := session.Values["hash"].(string)
 	text := r.FormValue("text")
 
 	if hash == "" {
@@ -86,8 +80,8 @@ func SaveHandler(w http.ResponseWriter, r *http.Request) {
 		root = hash
 	}
 
-	s := &Skit{Hash: hash, Parent: parent, Root: root, User: user, Text: text}
-	err := repo.Save(s)
+	s := &Skit{Hash: hash, Parent: parent, Root: root, User: user.Hash, Text: text}
+	err = repo.Save(s)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

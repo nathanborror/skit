@@ -13,10 +13,14 @@
 <div id="content"></div>
 
 {{template "footer" .}}
-
 <script type="text/javascript" src="/static/javascript/build/skits.js"></script>
 <script type="text/javascript">
-  React.renderComponent(SkitBoxes({urls: [window.location.pathname]}),
+  var strings = "{{range .parents}}/s/{{.Hash}}|{{end}}";
+  var urls = strings.split("|");
+  urls.pop();
+  // urls[urls.length-1] = window.location.pathname;
+
+  React.renderComponent(SkitBoxes({urls: urls}),
     document.getElementById('content'));
 </script>
 
