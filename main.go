@@ -57,7 +57,7 @@ func userHomeHandler(w http.ResponseWriter, r *http.Request) {
 var r = mux.NewRouter()
 
 func main() {
-	go hubspoke.H.Run()
+	go hubspoke.Hub.Run()
 
 	// Users
 	r.HandleFunc("/login", auth.LoginHandler)
