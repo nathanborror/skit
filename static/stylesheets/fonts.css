@@ -1,7 +1,10 @@
+/*
 @font-face { font-family: "M1c"; font-weight: 200;
   src: url("../fonts/mplus-1c-thin.ttf"); }
+*/
 @font-face { font-family: "M1c"; font-weight: 300;
   src: url("../fonts/mplus-1c-light.ttf"); }
+/*
 @font-face { font-family: "M1c"; font-weight: 400;
   src: url("../fonts/mplus-1c-regular.ttf"); }
 @font-face { font-family: "M1c"; font-weight: 500;
@@ -12,7 +15,8 @@
   src: url("../fonts/mplus-1c-heavy.ttf"); }
 @font-face { font-family: "M1c"; font-weight: 800;
   src: url("../fonts/mplus-1c-black.ttf"); }
-
+*/
+/*
 @font-face { font-family: "M1m"; font-weight: 200;
   src: url("../fonts/mplus-1m-thin.ttf"); }
 @font-face { font-family: "M1m"; font-weight: 300;
@@ -23,3 +27,4 @@
   src: url("../fonts/mplus-1m-medium.ttf"); }
 @font-face { font-family: "M1m"; font-weight: 600;
   src: url("../fonts/mplus-1m-bold.ttf"); }
+*/
