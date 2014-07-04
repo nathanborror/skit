@@ -25,7 +25,7 @@ func init() {
 	}
 }
 
-func homeHandler(w http.ResponseWriter, r *http.Request) {
+func rootHandler(w http.ResponseWriter, r *http.Request) {
 	user, err := auth.GetAuthenticatedUser(r)
 	if err != nil {
 		http.Redirect(w, r, "/login", http.StatusFound)
@@ -33,22 +33,41 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/u/"+user.Hash, http.StatusFound)
 }
 
-func userHomeHandler(w http.ResponseWriter, r *http.Request) {
+func homeHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	hash := vars["hash"]
+
+	// Load user
 	u, err := auth.GetAuthenticatedUser(r)
 	if err != nil {
 		http.Redirect(w, r, "/login", http.StatusFound)
 		return
 	}
 
-	s, err := skitRepo.ListWithUser(u.Hash)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+	// Load skit
+	s, _ := skitRepo.Load(hash)
+
+	var c []*skits.Skit
+
+	// If a skit exists then load it's children, otherwise load all the
+	// skits a user is involved in.
+	if s != nil {
+		c, err = skitRepo.ListWithParent(s.Hash)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	} else {
+		c, err = skitRepo.ListWithUser(u.Hash)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 
-	render.Render(w, r, "user_view", map[string]interface{}{
-		"skit":     "",
-		"children": s,
+	render.Render(w, r, "home", map[string]interface{}{
+		"skit":     s,
+		"children": c,
 		"user":     u,
 		"request":  r,
 	})
@@ -68,11 +87,11 @@ func main() {
 	r.HandleFunc("/s/save", auth.LoginRequired(skits.SaveHandler))
 	r.HandleFunc("/s/{hash:[a-zA-Z0-9-]+}/edit", auth.LoginRequired(skits.EditHandler))
 	r.HandleFunc("/s/{hash:[a-zA-Z0-9-]+}/delete", auth.LoginRequired(skits.DeleteHandler))
-	r.HandleFunc("/s/{hash:[a-zA-Z0-9-]+}", auth.LoginRequired(skits.ViewHandler))
+	r.HandleFunc("/s/{hash:[a-zA-Z0-9-]+}", auth.LoginRequired(homeHandler))
 
 	r.HandleFunc("/ws", hubspoke.SpokeHandler)
-	r.HandleFunc("/u/{hash:[a-zA-Z0-9-]+}", auth.LoginRequired(userHomeHandler))
-	r.HandleFunc("/", auth.LoginRequired(homeHandler))
+	r.HandleFunc("/u/{hash:[a-zA-Z0-9-]+}", auth.LoginRequired(homeHandler))
+	r.HandleFunc("/", auth.LoginRequired(rootHandler))
 
 	http.Handle("/", r)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))

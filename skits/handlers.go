@@ -11,39 +11,6 @@ import (
 var repo = SkitSQLRepository("db.sqlite3")
 var userRepo = auth.AuthSQLRepository("db.sqlite3")
 
-// ViewHandler displays a skit
-func ViewHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	hash := vars["hash"]
-
-	// Load the skit
-	s, err := repo.Load(hash)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// Load parent skits
-	p, err := repo.ListParents(s.Root)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	c, err := repo.ListWithParent(hash)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	render.Render(w, r, "skit_view", map[string]interface{}{
-		"request":  r,
-		"skit":     s,
-		"children": c,
-		"parents":  p,
-	})
-}
-
 // EditHandler edits a skit
 func EditHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
