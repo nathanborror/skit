@@ -72,7 +72,7 @@ function handleSave(e) {
   var form = $(this);
 
   $.post('/s/save', $(this).serialize(), function(data) {
-    if (data.skit.parent == "") {
+    if (form.parent().prop('tagName') == 'ARTICLE') {
       var parent = $('.ui-root-items')
       var item = getItemHTML(data.skit);
       parent.append(item);
