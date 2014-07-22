@@ -4,9 +4,9 @@
 */
 @font-face { font-family: "M1c"; font-weight: 300;
   src: url("../fonts/mplus-1c-light-webfont.ttf"); }
-/*
 @font-face { font-family: "M1c"; font-weight: 400;
-  src: url("../fonts/mplus-1c-regular.ttf"); }
+  src: url("../fonts/mplus-1c-regular-webfont.ttf"); }
+/*
 @font-face { font-family: "M1c"; font-weight: 500;
   src: url("../fonts/mplus-1c-medium.ttf"); }
 @font-face { font-family: "M1c"; font-weight: 600;
