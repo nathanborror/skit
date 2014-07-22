@@ -30,14 +30,15 @@
 
 {{define "footer"}}
   <footer>
+    <a href="/" class="ui-home">Home</a>
     {{if .request}}
+      {{if .request|isAuthenticated}}{{else}}
+      · <a class="ui-login" href="/login">Sign in</a>
+      {{end}}
+
       {{if .request|isAuthenticated}}
-      <a class="ui-button ui-button-logout" href="/logout">Sign out</a>
+      · <a class="ui-logout" href="/logout">Sign out</a>
       {{end}}
     {{end}}
   </footer>
-{{end}}
-
-{{define "home"}}
-  <a href="/" class="ui-button ui-button-home">Go home</a>
 {{end}}
