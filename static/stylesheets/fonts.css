@@ -7,14 +7,14 @@
 @font-face { font-family: "M1c"; font-weight: 400;
   src: url("../fonts/mplus-1c-regular-webfont.ttf"); }
 @font-face { font-family: "M1c"; font-weight: 500;
-  src: url("../fonts/mplus-1c-medium.ttf"); }
+  src: url("../fonts/mplus-1c-medium-webfont.ttf"); }
 /*
 @font-face { font-family: "M1c"; font-weight: 600;
-  src: url("../fonts/mplus-1c-bold.ttf"); }
+  src: url("../fonts/mplus-1c-bold-webfont.ttf"); }
 @font-face { font-family: "M1c"; font-weight: 700;
-  src: url("../fonts/mplus-1c-heavy.ttf"); }
+  src: url("../fonts/mplus-1c-heavy-webfont.ttf"); }
 @font-face { font-family: "M1c"; font-weight: 800;
-  src: url("../fonts/mplus-1c-black.ttf"); }
+  src: url("../fonts/mplus-1c-black-webfont.ttf"); }
 */
 /*
 @font-face { font-family: "M1m"; font-weight: 200;
