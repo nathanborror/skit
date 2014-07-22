@@ -12,14 +12,14 @@
   <form action="/s/save" method="post" class="ui-item-form" id="root-form">
     <input type="text" name="text" placeholder="What are you thinking about?" autocomplete="off">
     <input type="hidden" name="hash" value="">
-    <input type="hidden" name="parent" value="">
-    <input type="hidden" name="root" value="">
+    <input type="hidden" name="parent" value="{{if .skit}}{{.skit.Hash}}{{end}}">
+    <input type="hidden" name="root" value="{{if .skit}}{{.skit.Root}}{{end}}">
     <button type="submit" class="hidden">Save</button>
   </form>
 
   <div class="ui-root-items">
     {{range .children}}
-      <div class="ui-item" id="{{.Hash}}">
+      <div class="ui-item" id="{{.Hash}}" data-hash="{{.Hash}}" data-parent="{{.Parent}}" data-root="{{.Root}}">
         <a href="/s/{{.Hash}}">{{.Text}}</a>
       </div>
     {{end}}
