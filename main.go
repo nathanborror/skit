@@ -85,7 +85,6 @@ func main() {
 
 	// Skit
 	r.HandleFunc("/s/save", auth.LoginRequired(skits.SaveHandler))
-	r.HandleFunc("/s/{hash:[a-zA-Z0-9-]+}/edit", auth.LoginRequired(skits.EditHandler))
 	r.HandleFunc("/s/{hash:[a-zA-Z0-9-]+}/delete", auth.LoginRequired(skits.DeleteHandler))
 	r.HandleFunc("/s/{hash:[a-zA-Z0-9-]+}", auth.LoginRequired(homeHandler))
 
