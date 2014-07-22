@@ -1,41 +1,32 @@
 @import url(reset.css);
 @import url(fonts.css);
 
-body { background: #fff; }
-
 body, textarea, input, button { font-family: "M1c"; font-weight: 300;
   font-size: 24px; }
 
 article, footer { margin: 0 auto; width: 100%; }
 article:after, footer:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
 
-form { position: relative; }
+form { position: relative; margin-bottom: 32px; }
 
-fieldset { margin: 0 auto 32px auto; padding: 32px; max-width: 512px; background: #f9f9f9; font-size: 20px; border-radius: 6px; border: 1px solid #ddd;
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .1);}
+fieldset { margin: 0 auto 32px auto; padding: 32px; max-width: 512px; background: #f9f9f9; font-size: 20px; border-radius: 8px; }
 fieldset input { margin-bottom: 8px;}
 
 body, article, textarea, input, button, div { box-sizing: border-box; }
 
-input, textarea { display: block; background: none; box-sizing: border-box; margin: 0; padding: 12px 0;
-  width: 100%; border: none; border-bottom: 1px dashed #eee; font-size: 16px; line-height: 24px; }
+input, textarea { display: block; background: #fff; box-sizing: border-box; margin: 0; padding: 12px;
+  width: 100%; border: none; font-size: 16px; line-height: 24px; border-radius: 4px;
+  box-shadow: 0 1px 1px 0 rgba(0,0,0,.1); }
+input:focus { box-shadow: 0 1px 1px 0 rgba(0,0,0,.1), 0 0 0 2px rgba(81,158,244,.5); }
 textarea { height: 48px; resize: none; overflow: hidden; }
 textarea[name="text"] { height: 448px; font-size: 18px; line-height: 1.3; }
-
-::-webkit-input-placeholder { color: #ccc; }
+::-webkit-input-placeholder { color: #777; }
+:focus::-webkit-input-placeholder { color: #ccc; }
+button { display: inline-block; float: right; margin: 0; padding: 12px 32px; border: none; background: #fff; font-size: 16px; color: #777; border-radius: 4px;
+  box-shadow: 0 1px 0 0 rgba(0,0,0,.1); }
 
 p { margin-bottom: 8px; line-height: 1.3; }
 li { margin-bottom: 4px; line-height: 1.3; }
-
-button { display: inline-block; float: right; margin: 0; padding: 12px 32px; border: none; background: #4A90E2; font-size: 16px; color: #fff; border-radius: 3px; }
-
-.ui-back { position: absolute; top: 16px; left: 16px; display: inline-block; margin: 0; padding: 12px 24px;
-  background: url(../images/Back.svg) 50% 50% no-repeat;
-  font-size: 16px; text-indent: -2000px; overflow: hidden; opacity: .2; }
-
-.ui-share { position: absolute; top: 16px; right: 16px; display: inline-block; margin: 0; padding: 12px 24px;
-  background: url(../images/Share.svg) 50% 50% no-repeat;
-  font-size: 16px; text-indent: -2000px; overflow: hidden; opacity: .2; }
 
 .hidden { display: none; }
 
@@ -50,39 +41,28 @@ button { display: inline-block; float: right; margin: 0; padding: 12px 32px; bor
 footer { text-align: center; font-size: 14px;}
 footer a { color: #ccc; }
 
+/* Head */
 .ui-head { display: inline-block; padding-top: 0; width: 48px; height: 48px; background: hsl(332, 70%, 70%); border-radius: 24px; font-size: 16px; line-height: 48px; color: rgba(0,0,0,.4); }
 .ui-head:hover { text-decoration: none; }
 
-.ui-submit-wrapper { position: relative; margin: 32px 0; text-align: center; }
-.ui-submit-wrapper:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
-.ui-submit-wrapper .ui-back { float: left; }
-.ui-submit-wrapper button[type="submit"] { float: right; }
-
-.ui-sortable-placeholder { background: red; }
-
-.ui-quick-entry { margin-bottom: 16px; }
-
-header { position: relative; padding: 28px 16px; text-align: center; font-size: 16px; color: #999; }
-header h1 a { color: #999; }
-
 /* Buttons */
-.ui-button { display: block; padding: 12px 32px; font-size: 14px; background-color: #4A90E2; color: #fff; border-radius: 4px; }
+.ui-button { display: block; padding: 12px 32px; font-size: 14px; background-color: #fff; color: #777; border-radius: 4px;
+  box-shadow: 0 1px 0 0 rgba(0,0,0,.1); }
 .ui-button:hover { text-decoration: none; }
 
 .ui-button-login { position: absolute; top: 16px; right: 16px; z-index: 9; }
 .ui-button-logout { position: absolute; bottom: 32px; right: 32px; z-index: 9; }
 .ui-button-home { position: absolute; bottom: 32px; left: 32px; z-index: 9; }
 
-.ui-button-home,
-.ui-button-logout { background: #fff; border: 1px solid rgba(0,0,0,.1); color: rgba(0,0,0,.3); }
-.ui-button-home:hover,
-.ui-button-logout:hover { background-color: #4A90E2; color: #fff; border-color: #4A90E2; }
 
 .ui-skit { position: absolute; top: 0; right: 0; bottom: 0; left: 0; padding: 32px; background: rgba(255,255,255,.95);
   border-left: 1px solid #eee; }
 .ui-skit:nth-child(2) { left: 32px; z-index: 1; }
 .ui-skit:nth-child(3) { left: 64px; z-index: 2; }
 .ui-skit:nth-child(4) { left: 96px; z-index: 3; }
+
+/* Auth */
+.ui-auth { margin-top: 64px; }
 
 @media (min-width : 300px) and (max-width : 600px) {
   .ui-skit { padding: 16px; }
