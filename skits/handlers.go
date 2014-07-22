@@ -5,26 +5,10 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/nathanborror/gommon/auth"
-	"github.com/nathanborror/gommon/render"
 )
 
 var repo = SkitSQLRepository("db.sqlite3")
 var userRepo = auth.AuthSQLRepository("db.sqlite3")
-
-// EditHandler edits a skit
-func EditHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	hash := vars["hash"]
-
-	s, err := repo.Load(hash)
-	if err != nil {
-		s = &Skit{Hash: hash}
-	}
-	render.RenderTemplate(w, "skit_form", map[string]interface{}{
-		"request": r,
-		"skit":    s,
-	})
-}
 
 // SaveHandler saves a skit
 func SaveHandler(w http.ResponseWriter, r *http.Request) {
