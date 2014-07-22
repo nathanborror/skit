@@ -87,6 +87,11 @@ function handleSave(e) {
   form.find('input[name="text"]').val("");
 }
 
+function handleEdit(e) {
+  e.preventDefault();
+  alert("Not implemented yet :(");
+}
+
 function handleDelete(e) {
   e.preventDefault();
 
@@ -130,6 +135,7 @@ $(function() {
   $('body').on('contextmenu', '.ui-item a', handleContextMenu);
   $('body').on('submit', '.ui-item-form', handleSave);
   $('body').on('click', '.ui-item-delete', handleDelete);
+  $('body').on('click', '.ui-item-edit', handleEdit);
 
   $(document).on('click', function() {
     $('#menu').hide();
