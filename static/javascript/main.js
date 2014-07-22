@@ -30,11 +30,12 @@ function handleItemClick(e) {
 
 function addItems(data) {
   var parent = $('#'+data.skit.hash);
+  var anchor = parent.find('> a');
   parent.addClass('ui-item-expanded');
 
   for (var i=0; i<data.children.length; i++) {
     var item = getItemHTML(data.children[i], 'ui-item-child');
-    parent.append(item);
+    anchor.after(item);
   }
 
   // Copy form to items
@@ -49,9 +50,10 @@ function addItems(data) {
 
 function replaceItems(items, parent) {
   parent.find('.ui-item').remove();
+  var anchor = parent.find('> a');
   for (var i=0; i<items.length; i++) {
     var item = getItemHTML(items[i], 'ui-item-child');
-    parent.append(item);
+    anchor.after(item);
   }
 }
 
