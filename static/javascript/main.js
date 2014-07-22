@@ -149,5 +149,13 @@ $(function() {
 
   $('.ux-focus').focus();
 
+  window.SOCKET.onclose = function(e) {
+    var alert = $("#alert");
+    alert.append("<p>Oops! You've been disconnected. Refresh to fix this.</p>");
+  }
 
+  window.SOCKET.onopen = function(e) {
+    var p = $("#alert p");
+    p.remove();
+  }
 });

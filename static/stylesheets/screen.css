@@ -48,8 +48,6 @@ footer a { color: #aaa; }
 .ui-item { font-size: 14px; line-height: 24px; -webkit-user-select: none; }
 .ui-item a { display: inline-block; margin-bottom: 1px; padding: 8px 16px; background: rgba(81,185,219,1); font-size: 16px; color: #fff; }
 .ui-item a:hover { text-decoration: none; }
-.ui-item .ui-item-delete { position: absolute; display: none; top: 12px; left: -16px; padding: 4px; color: #E7808D !important; }
-.ui-item:hover .ui-item-delete { display: block; }
 
 /* Item child */
 .ui-item-child a { background: rgba(81,185,219,.5); border-left: 2px solid rgba(81,185,219,1); }
@@ -76,5 +74,9 @@ footer a { color: #aaa; }
 #menu a:hover { text-decoration: none; background: #4A90E2; color: #fff; }
 
 #menu .ui-item-delete { color: #ff4b65; }
+
+/* Alert */
+#alert { position: fixed; top: 0px; left: 0px; right: 0px; }
+#alert p { padding: 8px; background: #ff4b65; color: #fff; font-size: 14px; font-weight: 500; text-align: center; }
 
 @media (min-width : 300px) and (max-width : 600px) {}
