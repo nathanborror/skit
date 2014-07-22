@@ -6,7 +6,6 @@
   <meta name="viewport" content="initial-scale=1, maximum-scale=1">
   <link rel="stylesheet" href="/static/stylesheets/screen.css">
 
-  <script type="text/javascript" src="/static/javascript/vendor/react.0.11.0.js"></script>
   <script type="text/javascript" src="/static/javascript/vendor/jquery.js"></script>
   <script type="text/javascript" src="/static/javascript/vendor/jquery-ui.js"></script>
   <script type="text/javascript" src="/static/javascript/main.js"></script>
@@ -39,6 +38,9 @@
       {{if .request|isAuthenticated}}
       · <a class="ui-logout" href="/logout">Sign out</a>
       {{end}}
+    {{end}}
+    {{if .skit}}
+      · <a href="/s/{{.skit.Hash}}/delete">Delete</a>
     {{end}}
   </footer>
 {{end}}

@@ -8,15 +8,31 @@
 
 <body class="ui-solids">
 
+<article>
+  <form action="/s/save" method="post" class="ui-item-form" id="root-form">
+    <input type="text" name="text" placeholder="What are you thinking about?" autocomplete="off">
+    <input type="hidden" name="hash" value="">
+    <input type="hidden" name="parent" value="">
+    <input type="hidden" name="root" value="">
+    <button type="submit" class="hidden">Save</button>
+  </form>
 
-<div id="content"></div>
+  <div class="ui-root-items">
+    {{range .children}}
+      <div class="ui-item" id="{{.Hash}}">
+        <a href="/s/{{.Hash}}">{{.Text}}</a>
+      </div>
+    {{end}}
+  </div>
+</article>
+
+<ul id="menu">
+  <li><a class="ui-item-share" href="#">Share</a></li>
+  <li><a class="ui-item-edit" href="#">Edit</a></li>
+  <li><a class="ui-item-delete" href="#">Delete</a></li>
+</ul>
 
 {{template "footer" .}}
-<script type="text/javascript" src="/static/javascript/build/skits.js"></script>
-<script type="text/javascript">
-  React.renderComponent(SkitBoxes({urls: [window.location.pathname]}),
-    document.getElementById('content'));
-</script>
 
 </body>
 </html>
