@@ -20,9 +20,17 @@ var Skit = React.createClass({displayName: 'Skit',
     return {visible: true};
   },
   render: function() {
+    var hexColor = handleColor(this.props.user);
+    var styles;
+    if (document.body.classList.contains('ui-grid') || document.body.classList.contains('ui-solids')) {
+      styles = {'background': hexColor};
+    } else {
+      styles = {'border-color': hexColor};
+    }
+
     return this.state.visible ? (
-      React.DOM.div( {className:"ui-item", style:{"border-color": handleColor(this.props.user)}}, 
-        React.DOM.a( {href:"#", onClick:this.handleClick}, this.props.children),
+      React.DOM.div( {className:"ui-item", style:styles}, 
+        React.DOM.a( {href:"#", onClick:this.handleClick, onContextMenu:this.handleContextMenu}, this.props.children),
         React.DOM.a( {className:"ui-item-delete", href:"#", onClick:this.handleDelete}, "x")
       )
     ) : (React.DOM.span(null ));
@@ -43,7 +51,7 @@ var SkitList = React.createClass({displayName: 'SkitList',
         root:skit.root}, skit.text);
     });
     return (
-      React.DOM.div( {className:"ui-list"}, 
+      React.DOM.div(null, 
         skitNodes
       )
     );
