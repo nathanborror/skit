@@ -1,11 +1,11 @@
 
 function handleMessage(data) {
-  var parent = $('#'+data.skit.hash);
-  replaceItems(data.children, parent);
+  var parent = $('#'+data.item.hash);
+  replaceItems(data.items, parent);
 }
 
 // Kicks off an xhr request to pull down child items, if they exist.
-// Or hides children if they're already showing.
+// Or hides items if they're already showing.
 
 function handleItemClick(e) {
   e.preventDefault();
@@ -29,12 +29,12 @@ function handleItemClick(e) {
 // It also creates a new input field for that parent item.
 
 function addItems(data) {
-  var parent = $('#'+data.skit.hash);
+  var parent = $('#'+data.item.hash);
   var anchor = parent.find('> a');
   parent.addClass('ui-item-expanded');
 
-  for (var i=0; i<data.children.length; i++) {
-    var item = getItemHTML(data.children[i], 'ui-item-child');
+  for (var i=0; i<data.items.length; i++) {
+    var item = getItemHTML(data.items[i], 'ui-item-child');
     anchor.after(item);
   }
 
@@ -43,8 +43,8 @@ function addItems(data) {
   form.attr('id', '');
   var parent_field = form.find('[name="parent"]');
   var root_field = form.find('[name="root"]');
-  parent_field.val(data.skit.hash)
-  root_field.val(data.skit.root)
+  parent_field.val(data.item.hash)
+  root_field.val(data.item.root)
   form.find('input[name="text"]').focus();
 }
 
@@ -60,7 +60,7 @@ function replaceItems(items, parent) {
 // Returns HTML necessary to render an item
 
 function getItemHTML(data, extraClass) {
-  var item = $('<div class="ui-item '+extraClass+'" id="'+data.hash+'"><a href="/s/'+data.hash+'">'+data.text+'</a></div>');
+  var item = $('<div class="ui-item '+extraClass+'" id="'+data.hash+'"><a href="/i/'+data.hash+'">'+data.text+'</a></div>');
   item.data({'hash': data.hash, 'parent': data.parent, 'root': data.root});
   return item;
 }
@@ -71,17 +71,17 @@ function handleSave(e) {
   e.preventDefault();
   var form = $(this);
 
-  $.post('/s/save', $(this).serialize(), function(data) {
+  $.post('/i/save', $(this).serialize(), function(data) {
     if (form.parent().prop('tagName') == 'ARTICLE') {
       var parent = $('.ui-root-items')
-      var item = getItemHTML(data.skit);
+      var item = getItemHTML(data.item);
       parent.append(item);
     } else {
-      var parent = $('#'+data.skit.parent);
-      var item = getItemHTML(data.skit, 'ui-item-child');
+      var parent = $('#'+data.item.parent);
+      var item = getItemHTML(data.item, 'ui-item-child');
       form.before(item);
     }
-    window.SOCKET.request('/s/'+data.skit.parent);
+    window.SOCKET.request('/i/'+data.item.parent);
   }.bind(this));
 
   form.find('input[name="text"]').val("");
@@ -96,10 +96,10 @@ function handleDelete(e) {
   e.preventDefault();
 
   var target = $(this);
-  $.post('/s/'+target.data('hash')+'/delete', function(data) {
+  $.post('/i/'+target.data('hash')+'/delete', function(data) {
     var item = $('#'+target.data('hash'));
     item.remove();
-    window.SOCKET.request('/s/'+target.data('parent'));
+    window.SOCKET.request('/i/'+target.data('parent'));
   });
 }
 
@@ -110,13 +110,13 @@ function handleContextMenu(e) {
   var menu = $('#menu');
   var item = $(this).parent();
 
-  menu.find('.ui-item-share').attr('href', '/s/'+item.attr('id'));
+  menu.find('.ui-item-share').attr('href', '/i/'+item.attr('id'));
   menu.find('.ui-item-share').data({'hash': item.data('hash'), 'parent': item.data('parent'), 'root': item.data('root')});
 
-  menu.find('.ui-item-delete').attr('href', '/s/'+item.attr('id')+'/delete');
+  menu.find('.ui-item-delete').attr('href', '/i/'+item.attr('id')+'/delete');
   menu.find('.ui-item-delete').data({'hash': item.data('hash'), 'parent': item.data('parent'), 'root': item.data('root')});
 
-  menu.find('.ui-item-edit').attr('href', '/s/'+item.attr('id')+'/edit');
+  menu.find('.ui-item-edit').attr('href', '/i/'+item.attr('id')+'/edit');
   menu.find('.ui-item-edit').data({'hash': item.data('hash'), 'parent': item.data('parent'), 'root': item.data('root')});
 
   menu.show();
@@ -131,11 +131,11 @@ function handleColor(hash) {
 
 // HACK
 $(function() {
-  $('body').on('click', '.ui-item a', handleItemClick);
-  $('body').on('contextmenu', '.ui-item a', handleContextMenu);
-  $('body').on('submit', '.ui-item-form', handleSave);
-  $('body').on('click', '.ui-item-delete', handleDelete);
-  $('body').on('click', '.ui-item-edit', handleEdit);
+  $('body').on('click', '.ui-item-list .ui-item a', handleItemClick);
+  $('body').on('contextmenu', '.ui-item-list .ui-item a', handleContextMenu);
+  $('body').on('submit', '.ui-item-list .ui-item-form', handleSave);
+  $('body').on('click', '.ui-item-list .ui-item-delete', handleDelete);
+  $('body').on('click', '.ui-item-list .ui-item-edit', handleEdit);
 
   $(document).on('click', function() {
     $('#menu').hide();

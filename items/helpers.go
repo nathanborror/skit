@@ -1,4 +1,4 @@
-package skits
+package items
 
 import (
 	"crypto/md5"
@@ -7,8 +7,8 @@ import (
 	"time"
 )
 
-// GenerateSkitHash returns a hash
-func GenerateSkitHash(s string) (hash string) {
+// GenerateItemHash returns a hash
+func GenerateItemHash(s string) (hash string) {
 	time := time.Now().String()
 	hasher := md5.New()
 	io.WriteString(hasher, s+time)

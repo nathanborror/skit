@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  {{template "title" "Skit"}}
+  {{template "header"}}
+  <script type="text/javascript" src="/static/javascript/socket.js"></script>
+</head>
+
+<body class="ui-solids">
+
+<header>
+  <h1>People</h1>
+</header>
+
+<article>
+  {{range .users}}
+    <div class="ui-item">
+      <a href="/u/{{.Hash}}">{{.Name}}</a>
+    </div>
+  {{end}}
+</article>
+
+<ul id="menu">
+  <li><a class="ui-item-share" href="#">Share</a></li>
+  <li><a class="ui-item-edit" href="#">Edit</a></li>
+  <li><a class="ui-item-delete" href="#">Delete</a></li>
+</ul>
+
+<div id="alert"></div>
+
+{{template "footer" .}}
+
+</body>
+</html>
