@@ -55,6 +55,7 @@ footer a { color: #aaa; }
 
 /* Item expanded */
 .ui-item-expanded { margin: 0 0 16px 0; }
+.ui-item-expanded .ui-item { margin-left: 8px; }
 
 /* Item form */
 .ui-item form { margin: 0; }
