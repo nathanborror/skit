@@ -94,7 +94,6 @@ function handleEdit(e) {
 
 function handleDelete(e) {
   e.preventDefault();
-
   var target = $(this);
   $.post('/i/'+target.data('hash')+'/delete', function(data) {
     var item = $('#'+target.data('hash'));
@@ -109,15 +108,24 @@ function handleContextMenu(e) {
   e.preventDefault();
   var menu = $('#menu');
   var item = $(this).parent();
+  var url = '/i/'+item.attr('id');
+  var data = {
+    'hash': item.data('hash'),
+    'parent': item.data('parent'),
+    'root': item.data('root')
+  };
 
-  menu.find('.ui-item-share').attr('href', '/i/'+item.attr('id'));
-  menu.find('.ui-item-share').data({'hash': item.data('hash'), 'parent': item.data('parent'), 'root': item.data('root')});
+  var viewItem = menu.find('.ui-item-view');
+  viewItem.attr('href', url);
+  viewItem.data(data);
 
-  menu.find('.ui-item-delete').attr('href', '/i/'+item.attr('id')+'/delete');
-  menu.find('.ui-item-delete').data({'hash': item.data('hash'), 'parent': item.data('parent'), 'root': item.data('root')});
+  var deleteItem = menu.find('.ui-item-delete');
+  deleteItem.attr('href', url+'/delete');
+  deleteItem.data(data);
 
-  menu.find('.ui-item-edit').attr('href', '/i/'+item.attr('id')+'/edit');
-  menu.find('.ui-item-edit').data({'hash': item.data('hash'), 'parent': item.data('parent'), 'root': item.data('root')});
+  var editItem = menu.find('.ui-item-edit');
+  editItem.attr('href', url+'/edit');
+  editItem.data(data);
 
   menu.show();
   menu.css({'top': e.pageY, 'left': e.pageX});
@@ -131,11 +139,13 @@ function handleColor(hash) {
 
 // HACK
 $(function() {
-  $('body').on('click', '.ui-item-list .ui-item a', handleItemClick);
-  $('body').on('contextmenu', '.ui-item-list .ui-item a', handleContextMenu);
-  $('body').on('submit', '.ui-item-list .ui-item-form', handleSave);
-  $('body').on('click', '.ui-item-list .ui-item-delete', handleDelete);
-  $('body').on('click', '.ui-item-list .ui-item-edit', handleEdit);
+  var body = $('body');
+
+  body.on('click', '.ui-item a', handleItemClick);
+  body.on('contextmenu', '.ui-item a', handleContextMenu);
+  body.on('submit', '.ui-item-form', handleSave);
+  body.on('click', '.ui-item-delete', handleDelete);
+  body.on('click', '.ui-item-edit', handleEdit);
 
   $(document).on('click', function() {
     $('#menu').hide();
