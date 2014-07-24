@@ -74,6 +74,18 @@ footer a { color: #aaa; }
 #menu a:hover { text-decoration: none; background: rgba(82,155,246,1); color: #fff; }
 #menu .ui-item-delete:hover { background: rgba(227,79,72,1); }
 
+#menu .ui-color-picker a:hover { background: none; }
+#menu .ui-color-picker:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
+#menu .ui-color { display: inline-block; width: 20px; height: 20px; overflow: hidden; text-indent: -1000px; border-radius: 10px; }
+#menu .ui-color:hover,
+#menu .ui-color-selected,
+#menu .ui-color { box-shadow: inset 0 0 0 1px rgba(0,0,0,.2); }
+
+.ui-color-red { background: rgba(227,79,72,1); }
+.ui-color-yellow { background: rgba(245,166,35,1); }
+.ui-color-green { background: rgba(2,170,107,1); }
+.ui-color-blue { background: rgba(82,155,246,1); }
+
 #menu .ui-item-delete { color: #ff4b65; }
 
 /* Alert */

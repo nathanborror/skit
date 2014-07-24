@@ -61,7 +61,7 @@ function replaceItems(items, parent) {
 
 function getItemHTML(data, extraClass) {
   var item = $('<div class="ui-item '+extraClass+'" id="'+data.hash+'"><a href="/i/'+data.hash+'">'+data.text+'</a></div>');
-  item.data({'hash': data.hash, 'parent': data.parent, 'root': data.root});
+  item.data({'hash': data.hash, 'parent': data.parent, 'root': data.root, 'user': data.user});
   return item;
 }
 
@@ -71,7 +71,7 @@ function handleSave(e) {
   e.preventDefault();
   var form = $(this);
 
-  $.post('/i/save', $(this).serialize(), function(data) {
+  $.post('/i/save', form.serialize(), function(data) {
     if (form.parent().prop('tagName') == 'ARTICLE') {
       var parent = $('.ui-root-items')
       var item = getItemHTML(data.item);
@@ -112,7 +112,9 @@ function handleContextMenu(e) {
   var data = {
     'hash': item.data('hash'),
     'parent': item.data('parent'),
-    'root': item.data('root')
+    'root': item.data('root'),
+    'user': item.data('user'),
+    'text': item.data('text')
   };
 
   var viewItem = menu.find('.ui-item-view');
@@ -127,6 +129,9 @@ function handleContextMenu(e) {
   editItem.attr('href', url+'/edit');
   editItem.data(data);
 
+  var colorItem = menu.find('.ui-item-colors');
+  colorItem.data(data);
+
   menu.show();
 
   if ((e.pageY + menu.height()) > window.innerHeight) {
@@ -136,10 +141,31 @@ function handleContextMenu(e) {
   }
 }
 
-function handleColor(hash) {
-  var hue_resolution = 359;
-  var hue = parseInt(hash, 16) % hue_resolution;
-  return 'hsl(' + hue + ', ' + (.7 * 100) + '%, ' + (.7 * 100)+'%)';
+function handleColor(e) {
+  var color = $(e.target).data('color');
+  var hash = $(this).data('hash');
+  var parent = $(this).data('parent');
+  var root = $(this).data('root');
+  var user = $(this).data('user');
+  var text = $(this).data('text');
+  var target = $('#'+hash).find('> a');
+  target.css('background-color', 'rgba('+color+',1)');
+
+  // var data = 'text='+text+'&hash='+hash+'&parent='+parent+'&root='+root+'&user='+user+'&color='+color+'';
+
+
+  var serialized = $.param({
+    'text': text,
+    'hash': hash,
+    'parent': parent,
+    'root': root,
+    'user': user,
+    'color': color
+  }, true);
+
+  $.post('/i/save', serialized, function(data) {
+    console.log(data);
+  });
 }
 
 // HACK
@@ -151,15 +177,10 @@ $(function() {
   body.on('submit', '.ui-item-form', handleSave);
   body.on('click', '.ui-item-delete', handleDelete);
   body.on('click', '.ui-item-edit', handleEdit);
+  body.on('click', '.ui-item-colors', handleColor);
 
   $(document).on('click', function() {
     $('#menu').hide();
-  });
-
-  $('footer a').each(function() {
-    var user = $(this);
-    var color = handleColor(user.data('hash'));
-    user.css('background', color);
   });
 
   $('.ux-focus').focus();

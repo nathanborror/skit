@@ -22,6 +22,7 @@ func SaveHandler(w http.ResponseWriter, r *http.Request) {
 	parent := r.FormValue("parent")
 	root := r.FormValue("root")
 	text := r.FormValue("text")
+	color := r.FormValue("color")
 
 	if hash == "" {
 		hash = GenerateItemHash(text)
@@ -31,7 +32,7 @@ func SaveHandler(w http.ResponseWriter, r *http.Request) {
 		root = hash
 	}
 
-	s := &Item{Hash: hash, Parent: parent, Root: root, User: user.Hash, Text: text}
+	s := &Item{Hash: hash, Parent: parent, Root: root, User: user.Hash, Text: text, Color: color}
 	err = repo.Save(s)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

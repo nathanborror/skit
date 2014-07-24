@@ -11,6 +11,7 @@ type Item struct {
 	Text     string    `json:"text"`
 	Created  time.Time `json:"created"`
 	Modified time.Time `json:"modified"`
+	Color    string    `json:"color"`
 }
 
 // ChildCount returns children count
