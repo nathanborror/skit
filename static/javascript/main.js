@@ -142,6 +142,8 @@ function handleContextMenu(e) {
 }
 
 function handleColor(e) {
+  e.preventDefault();
+
   var color = $(e.target).data('color');
   var hash = $(this).data('hash');
   var parent = $(this).data('parent');
