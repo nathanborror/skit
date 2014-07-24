@@ -128,7 +128,12 @@ function handleContextMenu(e) {
   editItem.data(data);
 
   menu.show();
-  menu.css({'top': e.pageY, 'left': e.pageX});
+
+  if ((e.pageY + menu.height()) > window.innerHeight) {
+    menu.css({'top': e.pageY - menu.height(), 'left': e.pageX});
+  } else {
+    menu.css({'top': e.pageY, 'left': e.pageX});
+  }
 }
 
 function handleColor(hash) {

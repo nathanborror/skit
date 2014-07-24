@@ -46,12 +46,12 @@ footer a { color: #aaa; }
 
 /* Item */
 .ui-item { font-size: 14px; line-height: 24px; -webkit-user-select: none; }
-.ui-item a { display: inline-block; margin-bottom: 1px; padding: 8px 16px; background: rgba(81,185,219,1); font-size: 16px; color: #fff; }
+.ui-item a { display: inline-block; margin-bottom: 1px; padding: 8px 16px; background: rgba(82,155,246,1); font-size: 16px; color: #fff; }
 .ui-item a:hover { text-decoration: none; }
 .ui-item small { font-size: 12px; color: rgba(255,255,255,.5); }
 
 /* Item child */
-.ui-item-child a { background: rgba(81,185,219,.5); border-left: 2px solid rgba(81,185,219,1); }
+.ui-item-child a { background: rgba(82,155,246,.75); border-left: 2px solid rgba(82,155,246,1); }
 
 /* Item expanded */
 .ui-item-expanded { margin: 0 0 16px 0; }
@@ -60,21 +60,19 @@ footer a { color: #aaa; }
 
 /* Item form */
 .ui-item form { margin: 0; }
-.ui-item input { padding: 8px 16px; width: 75%; background: rgba(81,185,219,.1); border-left: 2px solid rgba(81,185,219,.2); box-shadow: none; color: rgba(81,185,219,1); border-radius: 0; }
-.ui-item input:focus { border-color: rgba(81,185,219,1); }
-.ui-item input::-webkit-input-placeholder { color: rgba(81,185,219,1); }
+.ui-item input { padding: 8px 16px; width: 75%; background: rgba(255,255,255,1); border-left: 2px solid rgba(0,0,0,.2); box-shadow: none; color: rgba(0,0,0,.4); border-radius: 0; }
 
 /* Auth */
 .ui-auth { margin-top: 64px; }
 
 /* Menu */
-#menu { position: absolute; display: none; margin: 0; padding: 0; background: #fff; border-radius: 4px;
-  box-shadow: 0 4px 20px rgba(0,0,0,.2); z-index: 999; }
+#menu { position: absolute; display: none; margin: 0; padding: 0; background: #fff;
+  box-shadow: 0 8px 30px rgba(0,0,0,.3); z-index: 999; }
 #menu li { margin: 0; padding: 0; }
-#menu li a { display: block; padding: 8px 32px; border-bottom: 1px solid rgba(0,0,0,.1); font-size: 14px; color: #000; }
-#menu li:first-child a { border-radius: 4px 4px 0 0; }
-#menu li:last-child a { border-bottom: none; border-radius: 0 0 4px 4px; }
-#menu a:hover { text-decoration: none; background: #4A90E2; color: #fff; }
+#menu li a { display: block; padding: 16px 32px; border-bottom: 1px solid rgba(0,0,0,.1); font-size: 14px; color: #000; }
+#menu li:last-child a { border-bottom: none; }
+#menu a:hover { text-decoration: none; background: rgba(82,155,246,1); color: #fff; }
+#menu .ui-item-delete:hover { background: rgba(227,79,72,1); }
 
 #menu .ui-item-delete { color: #ff4b65; }
 
