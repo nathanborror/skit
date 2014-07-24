@@ -42,7 +42,7 @@ footer a { color: #aaa; }
 
 /* Item */
 .ui-item { -webkit-user-select: none; }
-.ui-item a { display: inline-block; margin-bottom: 1px; padding: 12px 16px; background: rgba(82,155,246,1); color: #fff; }
+.ui-item a { display: inline-block; margin-bottom: 1px; padding: 8px 16px; background: rgba(82,155,246,1); color: #fff; }
 .ui-item a:hover { text-decoration: none; }
 .ui-item small { font-size: 12px; color: rgba(255,255,255,.5); }
 
