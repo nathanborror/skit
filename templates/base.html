@@ -19,14 +19,6 @@
   {{end}}
 {{end}}
 
-{{define "people"}}
-  <footer>
-    {{range $key, $value := .}}
-    <a class="ui-head" href="/u/{{$key.User.Hash}}" data-hash="{{$key.User.Hash}}">{{$key.User.Name | initials}}</a>
-    {{end}}
-  </footer>
-{{end}}
-
 {{define "footer"}}
   <footer>
     <a href="/" class="ui-home">Home</a>
