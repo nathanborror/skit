@@ -43,8 +43,10 @@ function addItems(data) {
   form.attr('id', '');
   var parent_field = form.find('[name="parent"]');
   var root_field = form.find('[name="root"]');
+  var color_field = form.find('[name="color"]');
   parent_field.val(data.item.hash)
   root_field.val(data.item.root)
+  color_field.val(data.item.color)
   form.find('input[name="text"]').focus();
 }
 
@@ -60,37 +62,54 @@ function replaceItems(items, parent) {
 // Returns HTML necessary to render an item
 
 function getItemHTML(data, extraClass) {
-  var item = $('<div class="ui-item '+extraClass+'" id="'+data.hash+'"><a href="/i/'+data.hash+'">'+data.text+'</a></div>');
-  item.data({'hash': data.hash, 'parent': data.parent, 'root': data.root, 'user': data.user});
+  var item = $('<div class="ui-item '+extraClass+'" id="'+data.hash+'"><a href="/i/'+data.hash+'" style="background-color:rgba('+data.color+',.5); border-color:rgba('+data.color+',1);">'+data.text+'</a></div>');
+  item.data({
+    'hash': data.hash,
+    'parent': data.parent,
+    'root': data.root,
+    'user': data.user,
+    'text': data.text
+  });
   return item;
 }
 
-// Saves a new item and inserts it into the DOM
+// Submits an item form
 
-function handleSave(e) {
+function handleSubmit(e) {
   e.preventDefault();
   var form = $(this);
 
-  $.post('/i/save', form.serialize(), function(data) {
+  handleSave(form.serialize(), function(data) {
     if (form.parent().prop('tagName') == 'ARTICLE') {
       var parent = $('.ui-root-items')
       var item = getItemHTML(data.item);
       parent.append(item);
     } else {
-      var parent = $('#'+data.item.parent);
       var item = getItemHTML(data.item, 'ui-item-child');
       form.before(item);
     }
-    window.SOCKET.request('/i/'+data.item.parent);
-  }.bind(this));
+  });
 
   form.find('input[name="text"]').val("");
 }
+
+// Saves a new item
+
+function handleSave(data, complete) {
+  $.post('/i/save', data, function(data) {
+    complete(data);
+    window.SOCKET.request('/i/'+data.item.parent);
+  }.bind(this));
+}
+
+// Edits an item
 
 function handleEdit(e) {
   e.preventDefault();
   alert("Not implemented yet :(");
 }
+
+// Deletes an item
 
 function handleDelete(e) {
   e.preventDefault();
@@ -156,7 +175,7 @@ function handleColor(e) {
   // var data = 'text='+text+'&hash='+hash+'&parent='+parent+'&root='+root+'&user='+user+'&color='+color+'';
 
 
-  var serialized = $.param({
+  var data = $.param({
     'text': text,
     'hash': hash,
     'parent': parent,
@@ -165,8 +184,8 @@ function handleColor(e) {
     'color': color
   }, true);
 
-  $.post('/i/save', serialized, function(data) {
-    console.log(data);
+  handleSave(data, function(data) {
+    console.log('SAVED');
   });
 }
 
@@ -176,7 +195,7 @@ $(function() {
 
   body.on('click', '.ui-item a', handleItemClick);
   body.on('contextmenu', '.ui-item a', handleContextMenu);
-  body.on('submit', '.ui-item-form', handleSave);
+  body.on('submit', '.ui-item-form', handleSubmit);
   body.on('click', '.ui-item-delete', handleDelete);
   body.on('click', '.ui-item-edit', handleEdit);
   body.on('click', '.ui-item-colors', handleColor);
