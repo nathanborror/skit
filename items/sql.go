@@ -61,24 +61,24 @@ func (r *sqlItemRepository) Delete(hash string) error {
 
 func (r *sqlItemRepository) List(limit int) ([]*Item, error) {
 	obj := []*Item{}
-	err := r.dbmap.Select(&obj, "SELECT * FROM item WHERE parent = '' ORDER BY modified DESC LIMIT ?", limit)
+	err := r.dbmap.Select(&obj, "SELECT * FROM item WHERE parent = '' ORDER BY created DESC LIMIT ?", limit)
 	return obj, err
 }
 
 func (r *sqlItemRepository) ListWithParent(parent string) ([]*Item, error) {
 	obj := []*Item{}
-	err := r.dbmap.Select(&obj, "SELECT * FROM item WHERE parent = ? ORDER BY modified DESC", parent)
+	err := r.dbmap.Select(&obj, "SELECT * FROM item WHERE parent = ? ORDER BY created DESC", parent)
 	return obj, err
 }
 
 func (r *sqlItemRepository) ListWithUser(user string) ([]*Item, error) {
 	obj := []*Item{}
-	err := r.dbmap.Select(&obj, "SELECT DISTINCT * FROM item WHERE hash IN (SELECT DISTINCT root FROM item WHERE user = ?) ORDER BY modified DESC", user)
+	err := r.dbmap.Select(&obj, "SELECT DISTINCT * FROM item WHERE hash IN (SELECT DISTINCT root FROM item WHERE user = ?) ORDER BY created DESC", user)
 	return obj, err
 }
 
 func (r *sqlItemRepository) ListParents(hash string) ([]*Item, error) {
 	obj := []*Item{}
-	err := r.dbmap.Select(&obj, "SELECT * FROM item WHERE root = ? ORDER BY modified DESC", hash)
+	err := r.dbmap.Select(&obj, "SELECT * FROM item WHERE root = ? ORDER BY created DESC", hash)
 	return obj, err
 }
