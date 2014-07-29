@@ -24,9 +24,7 @@
 
   <div class="ui-root-items">
     {{range .items}}
-      <div class="ui-item" id="{{.Hash}}" data-hash="{{.Hash}}" data-parent="{{.Parent}}" data-root="{{.Root}}" data-user="{{.User}}" data-text="{{.Text}}" title="{{.Created|date}}">
-        <a style="background-color: rgba({{if .Color}}{{.Color}}{{else}}82,155,246{{end}},1)" href="/i/{{.Hash}}">{{.Text}} <small>{{.ChildCount}}</small></a>
-      </div>
+      {{template "renderItem" .}}
     {{end}}
   </div>
 </article>

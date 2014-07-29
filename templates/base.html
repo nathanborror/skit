@@ -6,6 +6,7 @@
   <meta name="viewport" content="initial-scale=1, maximum-scale=1">
   <link rel="stylesheet" href="/static/stylesheets/screen.css">
 
+  <script type="text/javascript" src="/static/javascript/vendor/underscore.js"></script>
   <script type="text/javascript" src="/static/javascript/vendor/jquery.js"></script>
   <script type="text/javascript" src="/static/javascript/vendor/jquery-ui.js"></script>
   <script type="text/javascript" src="/static/javascript/main.js"></script>
@@ -55,4 +56,10 @@
 
 {{define "alert"}}
   <div id="alert"></div>
+{{end}}
+
+{{define "renderItem"}}
+  <div class="ui-item" id="{{.Hash}}" data-hash="{{.Hash}}" data-parent="{{.Parent}}" data-root="{{.Root}}" data-user="{{.User}}" data-text="{{.Text}}" data-color="{{.Color}}" title="{{.Created|date}}">
+    <a style="background-color: rgba({{if .Color}}{{.Color}}{{else}}82,155,246{{end}},1)" href="/i/{{.Hash}}">{{.Text}}</a>
+  </div>
 {{end}}

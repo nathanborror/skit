@@ -1,40 +1,25 @@
 
-function handleMessage(data) {
-  var parent = $('#'+data.item.hash);
-  replaceItems(data.items, parent);
-}
-
-// Kicks off an xhr request to pull down child items, if they exist.
-// Or hides items if they're already showing.
-
-function handleItemClick(e) {
-  e.preventDefault();
-  var item = $(this).parent();
-
-  if (item.hasClass('ui-item-expanded')) {
-    item.find('.ui-item').remove();
-    item.find('.ui-item-form').remove();
-    item.removeClass('ui-item-expanded');
-    window.SOCKET.unsubscribe(this.pathname);
+var handleMessage = function(data) {
+  var item = $('#'+data.item.hash);
+  if (item.length > 0) {
+    ItemManager.updateChildren(data.items, item);
   } else {
-    $.ajax({
-      'url': this.href,
-      'success': addItems
-    });
-    window.SOCKET.subscribe(this.pathname, handleMessage);
+    var root = $('.ui-root-items');
+    ItemManager.updateItems(data.items, root);
   }
 }
 
-// Appends child items to the clicked item.
-// It also creates a new input field for that parent item.
+var ItemManager = {};
 
-function addItems(data) {
+// AddItems Appends child items to the clicked item.
+// It also creates a new input field for that parent item.
+ItemManager.addItems = function(data) {
   var parent = $('#'+data.item.hash);
   var anchor = parent.find('> a');
   parent.addClass('ui-item-expanded');
 
   for (var i=0; i<data.items.length; i++) {
-    var item = getItemHTML(data.items[i], 'ui-item-child');
+    var item = Item.html(data.items[i], 'ui-item-child');
     anchor.after(item);
   }
 
@@ -50,42 +35,62 @@ function addItems(data) {
   form.find('input[name="text"]').focus();
 }
 
-function replaceItems(items, parent) {
+// UpdateItems checks all the items on screen and adds any missing from the
+// current dataset.
+ItemManager.updateItems = function(items, parent) {
+  var root = $('.ui-root-items');
+  var current = _.map(root.find('> .ui-item'), function(obj) {
+    return obj.id;
+  });
+
+  var hashes = _.map(items, function(obj) {
+    return obj.hash;
+  });
+
+  // Get the difference between the incoming hashes compared against
+  // the existing hashes in the DOM.
+  var diff = _.difference(hashes, current);
+
+  // Insert any hashes that don't exist.
+  for (var i=0; i<diff.length; i++) {
+    var data = _.findWhere(items, {'hash': diff[i]});
+    var item = Item.html(data);
+    Item.insert(item, root);
+  }
+
+  // Check for hashes that exist in the DOM that shouldn't.
+  var diff = _.difference(current, hashes);
+
+  // Remove them from the DOM
+  for (var i=0; i<diff.length; i++) {
+    var item = $('#'+diff[i]);
+    item.remove();
+  }
+}
+
+// UpdateChildren checks all the child items on screen and adds any missing
+// children from the current dataset.
+ItemManager.updateChildren = function(items, parent) {
   parent.find('.ui-item').remove();
   var anchor = parent.find('> a');
   for (var i=0; i<items.length; i++) {
-    var item = getItemHTML(items[i], 'ui-item-child');
+    var item = Item.html(items[i], 'ui-item-child');
     anchor.after(item);
   }
 }
 
-// Returns HTML necessary to render an item
-
-function getItemHTML(data, extraClass) {
-  var item = $('<div class="ui-item '+extraClass+'" id="'+data.hash+'"><a href="/i/'+data.hash+'" style="background-color:rgba('+data.color+',.5); border-color:rgba('+data.color+',1);">'+data.text+'</a></div>');
-  item.data({
-    'hash': data.hash,
-    'parent': data.parent,
-    'root': data.root,
-    'user': data.user,
-    'text': data.text
-  });
-  return item;
-}
-
-// Submits an item form
-
-function handleSubmit(e) {
+// Submit submits an item form.
+ItemManager.submit = function(e) {
   e.preventDefault();
   var form = $(this);
 
-  handleSave(form.serialize(), function(data) {
+  Item.save(form.serialize(), function(data) {
     if (form.parent().prop('tagName') == 'ARTICLE') {
       var parent = $('.ui-root-items')
-      var item = getItemHTML(data.item);
-      parent.append(item);
+      var item = Item.html(data.item);
+      Item.insert(item, parent);
     } else {
-      var item = getItemHTML(data.item, 'ui-item-child');
+      var item = Item.html(data.item, 'ui-item-child');
       form.before(item);
     }
   });
@@ -93,63 +98,110 @@ function handleSubmit(e) {
   form.find('input[name="text"]').val("");
 }
 
-// Saves a new item
+// Color saves an assigned color to an item.
+ItemManager.color = function(e) {
+  e.preventDefault();
 
-function handleSave(data, complete) {
+  var target = $(this);
+  var item = $('#'+target.data('hash'));
+  var color = $(e.target).data('color');
+
+  item.find('> a').css('background-color', 'rgba('+color+',1)');
+
+  target.data('color', color);
+  var data = $.param(target.data(), true);
+  Item.save(data);
+}
+
+var Item = {};
+
+// HandleClick kicks off an xhr request to pull down child items, if they
+// exist. Or hides items if they're already showing.
+Item.handleClick = function(e) {
+  e.preventDefault();
+  var item = $(this).parent();
+
+  if (item.hasClass('ui-item-expanded')) {
+    item.find('.ui-item').remove();
+    item.find('.ui-item-form').remove();
+    item.removeClass('ui-item-expanded');
+    window.SOCKET.unsubscribe(this.pathname);
+  } else {
+    $.ajax({
+      'url': this.href,
+      'success': ItemManager.addItems
+    });
+    window.SOCKET.subscribe(this.pathname, handleMessage);
+  }
+}
+
+// HTML returns HTML necessary to render an item.
+Item.html = function(data, extraClass) {
+  var item = $('<div class="ui-item '+extraClass+'" id="'+data.hash+'"><a href="/i/'+data.hash+'" style="background-color:rgba('+data.color+',.5); border-color:rgba('+data.color+',1);">'+data.text+'</a></div>');
+  item.data({
+    'hash': data.hash,
+    'parent': data.parent,
+    'root': data.root,
+    'user': data.user,
+    'text': data.text,
+    'color': data.color
+  });
+  return item;
+}
+
+// Save saves a new item.
+Item.save = function(data, complete) {
   $.post('/i/save', data, function(data) {
-    complete(data);
+    if (complete) {
+      complete(data);
+    }
+
     window.SOCKET.request('/i/'+data.item.parent);
   }.bind(this));
 }
 
-// Edits an item
-
-function handleEdit(e) {
+// Edit edits an item.
+Item.edit = function(e) {
   e.preventDefault();
   alert("Not implemented yet :(");
 }
 
-// Deletes an item
-
-function handleDelete(e) {
+// Deletes removes an item.
+Item.delete = function(e) {
   e.preventDefault();
   var target = $(this);
   $.post('/i/'+target.data('hash')+'/delete', function(data) {
-    var item = $('#'+target.data('hash'));
-    item.remove();
-    window.SOCKET.request('/i/'+target.data('parent'));
+    if (data.error) {
+      console.log(data.error);
+    } else {
+      var item = $('#'+target.data('hash'));
+      item.remove();
+      window.SOCKET.request('/i/'+target.data('parent'));
+    }
   });
 }
 
-// Shows or hides a contextual menu
-
-function handleContextMenu(e) {
+// ContextMenu shows or hides a contextual menu for an item.
+Item.contextMenu = function(e) {
   e.preventDefault();
   var menu = $('#menu');
   var item = $(this).parent();
   var url = '/i/'+item.attr('id');
-  var data = {
-    'hash': item.data('hash'),
-    'parent': item.data('parent'),
-    'root': item.data('root'),
-    'user': item.data('user'),
-    'text': item.data('text')
-  };
 
-  var viewItem = menu.find('.ui-item-view');
-  viewItem.attr('href', url);
-  viewItem.data(data);
+  menu.find('.ui-item-view')
+    .attr('href', url)
+    .data(item.data());
 
-  var deleteItem = menu.find('.ui-item-delete');
-  deleteItem.attr('href', url+'/delete');
-  deleteItem.data(data);
+  menu.find('.ui-item-delete')
+    .attr('href', url+'/delete')
+    .data(item.data());
 
-  var editItem = menu.find('.ui-item-edit');
-  editItem.attr('href', url+'/edit');
-  editItem.data(data);
+  menu.find('.ui-item-edit')
+    .attr('href', url+'/edit')
+    .data(item.data());
 
-  var colorItem = menu.find('.ui-item-colors');
-  colorItem.data(data);
+  menu.find('.ui-item-colors')
+    .data(item.data());
 
   menu.show();
 
@@ -160,45 +212,21 @@ function handleContextMenu(e) {
   }
 }
 
-function handleColor(e) {
-  e.preventDefault();
-
-  var color = $(e.target).data('color');
-  var hash = $(this).data('hash');
-  var parent = $(this).data('parent');
-  var root = $(this).data('root');
-  var user = $(this).data('user');
-  var text = $(this).data('text');
-  var target = $('#'+hash).find('> a');
-  target.css('background-color', 'rgba('+color+',1)');
-
-  // var data = 'text='+text+'&hash='+hash+'&parent='+parent+'&root='+root+'&user='+user+'&color='+color+'';
-
-
-  var data = $.param({
-    'text': text,
-    'hash': hash,
-    'parent': parent,
-    'root': root,
-    'user': user,
-    'color': color
-  }, true);
-
-  handleSave(data, function(data) {
-    console.log('SAVED');
-  });
+// Insert adds an item into a given parent node.
+Item.insert = function(item, parent) {
+  parent.prepend(item);
 }
 
 // HACK
 $(function() {
   var body = $('body');
 
-  body.on('click', '.ui-item a', handleItemClick);
-  body.on('contextmenu', '.ui-item a', handleContextMenu);
-  body.on('submit', '.ui-item-form', handleSubmit);
-  body.on('click', '.ui-item-delete', handleDelete);
-  body.on('click', '.ui-item-edit', handleEdit);
-  body.on('click', '.ui-item-colors', handleColor);
+  body.on('click', '.ui-item a', Item.handleClick);
+  body.on('contextmenu', '.ui-item a', Item.contextMenu);
+  body.on('submit', '.ui-item-form', ItemManager.submit);
+  body.on('click', '.ui-item-delete', Item.delete);
+  body.on('click', '.ui-item-edit', Item.edit);
+  body.on('click', '.ui-item-colors', ItemManager.color);
 
   $(document).on('click', function() {
     $('#menu').hide();
@@ -214,5 +242,7 @@ $(function() {
   window.SOCKET.onopen = function(e) {
     var p = $("#alert p");
     p.remove();
+
+    window.SOCKET.subscribe(window.location.pathname, handleMessage);
   }
 });
