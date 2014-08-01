@@ -7,7 +7,7 @@ var handleMessage = function(data) {
     var root = $('.ui-root-items');
     ItemManager.updateItems(data.items, root);
   }
-}
+};
 
 var ItemManager = {};
 
@@ -33,7 +33,7 @@ ItemManager.addItems = function(data) {
   root_field.val(data.item.root)
   color_field.val(data.item.color)
   form.find('input[name="text"]').focus();
-}
+};
 
 // UpdateItems checks all the items on screen and adds any missing from the
 // current dataset.
@@ -66,7 +66,7 @@ ItemManager.updateItems = function(items, parent) {
     var item = $('#'+diff[i]);
     item.remove();
   }
-}
+};
 
 // UpdateChildren checks all the child items on screen and adds any missing
 // children from the current dataset.
@@ -77,7 +77,7 @@ ItemManager.updateChildren = function(items, parent) {
     var item = Item.html(items[i], 'ui-item-child');
     anchor.after(item);
   }
-}
+};
 
 // Submit submits an item form.
 ItemManager.submit = function(e) {
@@ -96,22 +96,38 @@ ItemManager.submit = function(e) {
   });
 
   form.find('input[name="text"]').val("");
-}
+};
 
 // Color saves an assigned color to an item.
 ItemManager.color = function(e) {
   e.preventDefault();
 
   var target = $(this);
-  var item = $('#'+target.data('hash'));
+  var item = $('#'+e.data.hash);
   var color = $(e.target).data('color');
 
   item.find('> a').css('background-color', 'rgba('+color+',1)');
 
-  target.data('color', color);
-  var data = $.param(target.data(), true);
+  e.data.color = color;
+  var data = $.param(e.data, true);
   Item.save(data);
-}
+};
+
+ItemManager.handleContextMenu = function(e) {
+  e.preventDefault();
+
+  var item = $(e.target).parent();
+  if (!item.hasClass('ui-item')) {
+    return;
+  }
+
+  Menu.show(item.data(), {
+    'Colors': ItemManager.color,
+    'View': Item.view,
+    'Edit': Item.edit,
+    'Delete': Item.delete
+  }, e);
+};
 
 var Item = {};
 
@@ -119,21 +135,30 @@ var Item = {};
 // exist. Or hides items if they're already showing.
 Item.handleClick = function(e) {
   e.preventDefault();
-  var item = $(this).parent();
+  e.stopPropagation();
+
+  Menu.clear();
+
+  if (e.target.tagName == 'DIV') {
+    return;
+  }
+
+  var item = $(this);
+  var url = '/i/'+item.data('hash');
 
   if (item.hasClass('ui-item-expanded')) {
     item.find('.ui-item').remove();
     item.find('.ui-item-form').remove();
     item.removeClass('ui-item-expanded');
-    window.SOCKET.unsubscribe(this.pathname);
+    window.SOCKET.unsubscribe(url);
   } else {
     $.ajax({
-      'url': this.href,
+      'url': url,
       'success': ItemManager.addItems
     });
-    window.SOCKET.subscribe(this.pathname, handleMessage);
+    window.SOCKET.subscribe(url, handleMessage);
   }
-}
+};
 
 // HTML returns HTML necessary to render an item.
 Item.html = function(data, extraClass) {
@@ -147,7 +172,7 @@ Item.html = function(data, extraClass) {
     'color': data.color
   });
   return item;
-}
+};
 
 // Save saves a new item.
 Item.save = function(data, complete) {
@@ -158,80 +183,122 @@ Item.save = function(data, complete) {
 
     window.SOCKET.request('/i/'+data.item.parent);
   }.bind(this));
-}
+};
 
 // Edit edits an item.
 Item.edit = function(e) {
   e.preventDefault();
   alert("Not implemented yet :(");
-}
+};
 
 // Deletes removes an item.
 Item.delete = function(e) {
   e.preventDefault();
-  var target = $(this);
-  $.post('/i/'+target.data('hash')+'/delete', function(data) {
+  $.post('/i/'+e.data.hash+'/delete', function(data) {
     if (data.error) {
       console.log(data.error);
     } else {
-      var item = $('#'+target.data('hash'));
+      var item = $('#'+e.data.hash);
       item.remove();
-      window.SOCKET.request('/i/'+target.data('parent'));
+      window.SOCKET.request('/i/'+e.data.parent);
     }
   });
-}
+};
 
-// ContextMenu shows or hides a contextual menu for an item.
-Item.contextMenu = function(e) {
+Item.view = function(e) {
   e.preventDefault();
-  var menu = $('#menu');
-  var item = $(this).parent();
-  var url = '/i/'+item.attr('id');
+  window.location = '/i/'+e.data.hash;
+};
 
-  menu.find('.ui-item-view')
-    .attr('href', url)
-    .data(item.data());
+// Insert adds an item into a given parent node.
+Item.insert = function(item, parent) {
+  parent.prepend(item);
+};
 
-  menu.find('.ui-item-delete')
-    .attr('href', url+'/delete')
-    .data(item.data());
+var MessageManager = {};
 
-  menu.find('.ui-item-edit')
-    .attr('href', url+'/edit')
-    .data(item.data());
+MessageManager.handleContextMenu = function(e) {
+  e.preventDefault();
+  Menu.show($(this).data(), {
+    'Edit': Message.edit,
+    'Delete': Message.delete
+  }, e);
+};
 
-  menu.find('.ui-item-colors')
-    .data(item.data());
+var Message = {};
 
-  menu.show();
+Message.edit = function(e) {
+  e.preventDefault();
+  alert("Not implemented yet :(");
+};
+
+Message.delete = function(e) {
+  e.preventDefault();
+  $.post('/m/'+e.data.hash+'/delete', function(data) {
+    if (data.error) {
+      console.log(data.error);
+    } else {
+      var message = $('#'+e.data.hash);
+      message.remove();
+      // window.SOCKET.request('/i/'+target.data('parent'));
+    }
+  });
+};
+
+var Menu = {};
+
+Menu.show = function(data, options, e) {
+  Menu.clear();
+
+  var menu = $('<div class="ui-menu"><ul></ul></div>');
+  var ul = menu.find('ul');
+
+  for (option in options) {
+    var item = $('<li><a class="ui-menu-'+option.toLowerCase()+'" href="#">'+option+'</a></li>');
+    item.on('click', data, options[option]);
+
+    if (option == 'Colors') {
+      item.find('a').text('');
+      item.find('a').append(''+
+        '<span data-color="79,89,119" class="ui-color ui-color-dark">Dark</span>'+
+        '<span data-color="110,171,221" class="ui-color ui-color-blue ui-color-selected">Blue</span>'+
+        '<span data-color="152,225,178" class="ui-color ui-color-green">Green</span>'+
+        '<span data-color="255,231,159" class="ui-color ui-color-yellow">Yellow</span>'+
+        '<span data-color="246,155,129" class="ui-color ui-color-red">Red</span>'
+        );
+    }
+    ul.append(item);
+  }
+
+  $('body').append(menu);
 
   if ((e.pageY + menu.height()) > window.innerHeight) {
     menu.css({'top': e.pageY - menu.height(), 'left': e.pageX});
   } else {
     menu.css({'top': e.pageY, 'left': e.pageX});
   }
-}
+};
 
-// Insert adds an item into a given parent node.
-Item.insert = function(item, parent) {
-  parent.prepend(item);
-}
+Menu.clear = function() {
+  $('.ui-menu').remove();
+};
 
 // HACK
 $(function() {
   var body = $('body');
 
-  body.on('click', '.ui-item a', Item.handleClick);
-  body.on('contextmenu', '.ui-item a', Item.contextMenu);
+  // Items
+  body.on('click', '.ui-item', Item.handleClick);
   body.on('submit', '.ui-item-form', ItemManager.submit);
-  body.on('click', '.ui-item-delete', Item.delete);
-  body.on('click', '.ui-item-edit', Item.edit);
-  body.on('click', '.ui-item-colors', ItemManager.color);
+  body.on('contextmenu', '.ui-item', ItemManager.handleContextMenu);
 
-  $(document).on('click', function() {
-    $('#menu').hide();
-  });
+  // Messages
+  body.on('contextmenu', '.ui-message', MessageManager.handleContextMenu);
 
+  // Menus
+  $(document).on('click', Menu.clear);
+
+  // Input fields
   $('.ux-focus').focus();
 
   window.SOCKET.onclose = function(e) {
