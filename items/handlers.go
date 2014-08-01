@@ -6,6 +6,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/nathanborror/gommon/auth"
+	"github.com/nathanborror/gommon/render"
 )
 
 var repo = ItemSQLRepository("db.sqlite3")
@@ -55,14 +56,17 @@ func DeleteHandler(w http.ResponseWriter, r *http.Request) {
 
 	u, err := auth.GetAuthenticatedUser(r)
 
-	s, err := repo.Load(hash)
+	i, err := repo.Load(hash)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	if s.User != u.Hash {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	if i.User != u.Hash {
+		render.Render(w, r, "error", map[string]interface{}{
+			"error":   "You can only delete items you created.",
+			"request": r,
+		})
 		return
 	}
 
