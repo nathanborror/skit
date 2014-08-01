@@ -1,4 +1,3 @@
-var isSelectMode = false;
 var tabFocusedItemHash = null;
 
 var handleMessage = function(data) {
@@ -178,9 +177,7 @@ ItemManager.handleQuestionMenu = function(e) {
 };
 
 ItemManager.clearSelected = function() {
-  console.log("TEST");
   $('.ui-item-selected').removeClass('ui-item-selected');
-  isSelectMode = false;
 };
 
 var Item = {};
@@ -203,11 +200,6 @@ Item.handleClick = function(e) {
 
 Item.focus = function(item) {
   var url = '/i/'+item.data('hash');
-
-  if (isSelectMode) {
-    item.toggleClass('ui-item-selected');
-    return;
-  }
 
   if (item.hasClass('ui-item-expanded')) {
     item.find('.ui-item').remove();
@@ -390,16 +382,16 @@ $(function() {
   // Keyboard shortcuts
   body.on({
     'keydown': function(e) {
-      // if (e.keyCode == 16) { // Shift
-      //   console.log('ON');
-      //   isSelectMode = true;
-      // }
       if (e.keyCode == 9) { // Tab
         e.preventDefault();
         var item;
         if (tabFocusedItemHash) {
           var previousItem = $('#'+tabFocusedItemHash);
-          item = previousItem.next();
+          if (e.shiftKey) {
+            item = previousItem.prev();
+          } else {
+            item = previousItem.next();
+          }
           Item.focus(previousItem);
         } else {
           item = $('.ui-item').first();
@@ -407,12 +399,6 @@ $(function() {
         tabFocusedItemHash = item.data('hash');
         Item.focus(item);
       }
-    },
-    'keyup': function(e) {
-      // if (e.keyCode == 16) { // Shift
-      //   console.log('OFF');
-      //   isSelectMode = false;
-      // }
     }
   });
 
