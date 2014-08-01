@@ -1,6 +1,7 @@
 package items
 
 import (
+	"time"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -23,6 +24,7 @@ func SaveHandler(w http.ResponseWriter, r *http.Request) {
 	root := r.FormValue("root")
 	text := r.FormValue("text")
 	color := r.FormValue("color")
+	created := time.Now()
 
 	if hash == "" {
 		hash = GenerateItemHash(text)
@@ -32,8 +34,13 @@ func SaveHandler(w http.ResponseWriter, r *http.Request) {
 		root = hash
 	}
 
-	s := &Item{Hash: hash, Parent: parent, Root: root, User: user.Hash, Text: text, Color: color}
-	err = repo.Save(s)
+	item, err := repo.Load(hash)
+	if err == nil {
+		created = item.Created
+	}
+
+	i := &Item{Hash: hash, Parent: parent, Root: root, User: user.Hash, Text: text, Color: color, Created: created}
+	err = repo.Save(i)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
