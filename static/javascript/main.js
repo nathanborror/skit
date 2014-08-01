@@ -197,10 +197,11 @@ Item.handleClick = function(e) {
     return;
   }
 
-  Item.Focus($(this));
+  tabFocusedItemHash = null;
+  Item.focus($(this));
 };
 
-Item.Focus = function(item) {
+Item.focus = function(item) {
   var url = '/i/'+item.data('hash');
 
   if (isSelectMode) {
@@ -399,12 +400,12 @@ $(function() {
         if (tabFocusedItemHash) {
           var previousItem = $('#'+tabFocusedItemHash);
           item = previousItem.next();
-          Item.Focus(previousItem);
+          Item.focus(previousItem);
         } else {
           item = $('.ui-item').first();
         }
         tabFocusedItemHash = item.data('hash');
-        Item.Focus(item);
+        Item.focus(item);
       }
     },
     'keyup': function(e) {
