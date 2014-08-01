@@ -372,6 +372,7 @@ $(function() {
   body.on('click', '.ui-item', Item.handleClick);
   body.on('submit', '.ui-item-form', ItemManager.submit);
   body.on('contextmenu', '.ui-item', ItemManager.handleContextMenu);
+  body.on('click', '.ui-item-question', ItemManager.handleQuestionMenu);
 
   // Messages
   body.on('contextmenu', '.ui-message', MessageManager.handleContextMenu);
@@ -388,10 +389,10 @@ $(function() {
   // Keyboard shortcuts
   body.on({
     'keydown': function(e) {
-      if (e.keyCode == 16) { // Shift
-        console.log('ON');
-        isSelectMode = true;
-      }
+      // if (e.keyCode == 16) { // Shift
+      //   console.log('ON');
+      //   isSelectMode = true;
+      // }
       if (e.keyCode == 9) { // Tab
         e.preventDefault();
         var item;
@@ -407,10 +408,10 @@ $(function() {
       }
     },
     'keyup': function(e) {
-      if (e.keyCode == 16) { // Shift
-        console.log('OFF');
-        isSelectMode = false;
-      }
+      // if (e.keyCode == 16) { // Shift
+      //   console.log('OFF');
+      //   isSelectMode = false;
+      // }
     }
   });
 
