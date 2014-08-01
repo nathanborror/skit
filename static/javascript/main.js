@@ -177,6 +177,12 @@ ItemManager.handleQuestionMenu = function(e) {
   }, e);
 };
 
+ItemManager.clearSelected = function() {
+  console.log("TEST");
+  $('.ui-item-selected').removeClass('ui-item-selected');
+  isSelectMode = false;
+};
+
 var Item = {};
 
 // HandleClick kicks off an xhr request to pull down child items, if they
@@ -371,7 +377,10 @@ $(function() {
   body.on('contextmenu', '.ui-message', MessageManager.handleContextMenu);
 
   // Menus
-  $(document).on('click', Menu.clear);
+  $(document).on('click', function() {
+    Menu.clear();
+    ItemManager.clearSelected();
+  });
 
   // Input fields
   $('.ux-focus').focus();
