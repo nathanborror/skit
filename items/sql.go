@@ -46,7 +46,6 @@ func (r *sqlItemRepository) Save(item *Item) error {
 	n, err := r.dbmap.Update(item)
 	if err != nil {
 		panic(err)
-		return err
 	}
 	if n == 0 {
 		err = r.dbmap.Insert(item)
