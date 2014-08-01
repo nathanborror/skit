@@ -49,8 +49,12 @@
 {{end}}
 
 {{define "renderItem"}}
-  <div class="ui-item" id="{{.Hash}}" data-hash="{{.Hash}}" data-parent="{{.Parent}}" data-root="{{.Root}}" data-user="{{.User}}" data-text="{{.Text}}" data-color="{{.Color}}" title="{{.Created|date}}">
-    <a style="background-color: rgba({{if .Color}}{{.Color}}{{else}}82,155,246{{end}},1)" href="/i/{{.Hash}}">{{.Text}}</a>
+  <div class="ui-item{{if .Color|isLight}} ui-item-light{{end}}" id="{{.Hash}}" data-hash="{{.Hash}}" data-parent="{{.Parent}}" data-root="{{.Root}}" data-user="{{.User}}" data-text="{{.Text}}" data-color="{{.Color}}">
+    <a style="background-color: rgba({{if .Color}}{{.Color}}{{else}}110,171,221{{end}},1)" href="/i/{{.Hash}}">
+      {{if .Text|isQuestion}}{{.Text|slice "0:-1"}}<span class="ui-item-question">?</span>{{else}}{{.Text}}{{end}}
+      {{with $user := .User|user}}<span class="ui-item-user" data-name="{{$user.Name}}" data-hash="{{$user.Hash}}" data-email="{{$user.Email}}"></span>{{end}}
+    </a>
+  </div>
 {{end}}
 
 {{define "renderMessage"}}
