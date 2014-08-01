@@ -1,3 +1,5 @@
+var isSelectMode = false;
+var tabFocusedItemHash = null;
 
 var handleMessage = function(data) {
   var item = $('#'+data.item.hash);
@@ -189,8 +191,16 @@ Item.handleClick = function(e) {
     return;
   }
 
-  var item = $(this);
+  Item.Focus($(this));
+};
+
+Item.Focus = function(item) {
   var url = '/i/'+item.data('hash');
+
+  if (isSelectMode) {
+    item.toggleClass('ui-item-selected');
+    return;
+  }
 
   if (item.hasClass('ui-item-expanded')) {
     item.find('.ui-item').remove();
@@ -366,6 +376,36 @@ $(function() {
   // Input fields
   $('.ux-focus').focus();
 
+  // Keyboard shortcuts
+  body.on({
+    'keydown': function(e) {
+      if (e.keyCode == 16) { // Shift
+        console.log('ON');
+        isSelectMode = true;
+      }
+      if (e.keyCode == 9) { // Tab
+        e.preventDefault();
+        var item;
+        if (tabFocusedItemHash) {
+          var previousItem = $('#'+tabFocusedItemHash);
+          item = previousItem.next();
+          Item.Focus(previousItem);
+        } else {
+          item = $('.ui-item').first();
+        }
+        tabFocusedItemHash = item.data('hash');
+        Item.Focus(item);
+      }
+    },
+    'keyup': function(e) {
+      if (e.keyCode == 16) { // Shift
+        console.log('OFF');
+        isSelectMode = false;
+      }
+    }
+  });
+
+  // WebSocket
   window.SOCKET.onclose = function(e) {
     var alert = $("#alert");
     alert.append("<p>Oops! You've been disconnected. <a href='javascript:location.reload();'>Reload</a> to fix this.</p>");
