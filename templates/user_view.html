@@ -13,7 +13,7 @@
 
 <article class="ui-item-list">
   <form action="/i/save" method="post" class="ui-item-form" id="root-form">
-    <input type="text" name="text" placeholder="What are you thinking about?" autocomplete="off">
+    <input type="text" name="text" placeholder="What are you thinking about?" autocomplete="off" class="ux-focus">
     <input type="hidden" name="hash" value="">
     <input type="hidden" name="parent" value="{{if .item}}{{.item.Hash}}{{end}}">
     <input type="hidden" name="root" value="{{if .item}}{{.item.Root}}{{end}}">
