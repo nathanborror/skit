@@ -185,7 +185,7 @@ Item.handleClick = function(e) {
 
   Menu.clear();
 
-  if (e.target.tagName == 'DIV') {
+  if (e.target.tagName == 'DIV' || e.target.tagName == 'INPUT') {
     return;
   }
 
@@ -204,7 +204,7 @@ Item.handleClick = function(e) {
     });
     window.SOCKET.subscribe(url, handleMessage);
   }
-};
+}
 
 // HTML returns HTML necessary to render an item.
 Item.html = function(data, extraClass) {
