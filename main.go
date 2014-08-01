@@ -9,6 +9,7 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/nathanborror/gommon/auth"
 	"github.com/nathanborror/gommon/hubspoke"
+	"github.com/nathanborror/gommon/markdown"
 	"github.com/nathanborror/gommon/render"
 	"github.com/nathanborror/skit/items"
 )
@@ -18,6 +19,7 @@ var itemRepo = items.ItemSQLRepository("db.sqlite3")
 var authRepo = auth.AuthSQLRepository("db.sqlite3")
 
 func init() {
+	_ = render.RegisterTemplateFunction("markdown", markdown.Markdown)
 	store.Options = &sessions.Options{
 		Domain:   "localhost",
 		Path:     "/",
