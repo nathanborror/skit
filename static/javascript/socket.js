@@ -2,7 +2,7 @@
 var kActionRequest = 'request';
 var kActionSubscribe = 'subscribe';
 
-window.SOCKET = new WebSocket("ws://localhost:8080/ws");
+window.SOCKET = new WebSocket("ws://"+window.location.host+"/ws");
 
 window.SOCKET.subscriptions = {};
 
