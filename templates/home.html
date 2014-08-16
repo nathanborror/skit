@@ -5,10 +5,10 @@
   {{template "header"}}
 </head>
 
-<body class="ui-solids">
+<body>
 
 <header>
-  <h1>{{.item.Text}}</h1>
+  <h1>{{if .item}}{{.item.Text}}{{else}}{{.user.Name}}{{end}}</h1>
 </header>
 
 <article class="ui-item-list">

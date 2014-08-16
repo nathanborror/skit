@@ -140,7 +140,7 @@ func peopleHandler(w http.ResponseWriter, r *http.Request) {
 	u, err := authRepo.List(10)
 	check(err, w)
 
-	render.Render(w, r, "user_list", map[string]interface{}{
+	render.Render(w, r, "users", map[string]interface{}{
 		"users":   u,
 		"request": r,
 	})
@@ -156,7 +156,7 @@ func personHandler(w http.ResponseWriter, r *http.Request) {
 	i, err := itemRepo.ListWithUser(u.Hash)
 	check(err, w)
 
-	render.Render(w, r, "user_view", map[string]interface{}{
+	render.Render(w, r, "home", map[string]interface{}{
 		"request": r,
 		"user":    u,
 		"items":   i,
