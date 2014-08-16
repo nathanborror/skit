@@ -1,0 +1,6 @@
+[submodule "static/javascript/vendor/jasmine-jquery"]
+	path = static/javascript/vendor/jasmine-jquery
+	url = https://github.com/velesin/jasmine-jquery
+[submodule "static/javascript/vendor/jasmine"]
+	path = static/javascript/vendor/jasmine
+	url = https://github.com/pivotal/jasmine.git
