@@ -1,7 +1,7 @@
 
 var kActionRequest = 'request';
 var kActionSubscribe = 'subscribe';
-var kPort = '8080'
+var kPort = '8080';
 
 window.SOCKET = new WebSocket("ws://"+window.location.host+"/ws");
 
