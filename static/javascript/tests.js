@@ -5,8 +5,19 @@ describe("A suite", function() {
 });
 
 describe("A WebSocket", function() {
+  beforeEach(function(done) {
+    spyOn(window.SOCKET, 'onopen');
+    setTimeout(function() {
+      done();
+    }, 1000);
+  });
+
   it("is defined", function() {
     expect(window.SOCKET).toBeDefined();
+  });
+
+  it("is opened", function() {
+    expect(window.SOCKET.onopen).toHaveBeenCalled();
   });
 });
 
@@ -33,30 +44,24 @@ describe("Child items", function() {
   var item = null
 
   beforeEach(function(done) {
-    spy = spyOnEvent('.ui-item', 'click');
-    item = $('.ui-item').first();
-    done();
+    item = $('.ui-item a').first();
+    spyOn(item, 'click');
+
+    setTimeout(function() {
+      item.click();
+      done();
+    }, 1000);
   });
 
   it("show when an item is clicked", function(done) {
-    setTimeout(function() {
-      item.click();
-      expect('click').toHaveBeenTriggeredOn('.ui-item');
-
-      // var children = item.find('.ui-item-child');
-      // expect(children.length).toBeGreaterThan(0);
-
-      // expect(item.find('form input[name="text"]')).toBeFocused();
-      done();
-    }, 500);
+    expect(item.click).toHaveBeenCalled();
+    console.log(item.parent().find('form'));
+    done();
   });
 
   it("hide when item is clicked again", function(done) {
-    setTimeout(function() {
-      item.click();
-      expect('click').toHaveBeenTriggeredOn('.ui-item');
-      done();
-    }, 1000);
+    expect(item.click).toHaveBeenCalled();
+    done();
   });
 });
 
