@@ -359,7 +359,7 @@ Menu.clear = function() {
 
 // HACK
 $(function() {
-  var body = $('body');
+  var body = $('body.ui-app');
 
   // Items
   body.on('click', '.ui-item', Item.handleClick);
