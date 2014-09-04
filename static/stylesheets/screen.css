@@ -102,11 +102,5 @@ footer a { color: #aaa; }
 
 
 @media (max-width : 600px) {
-  header { display: none; }
-  body, textarea, input, button { font-size: 14px; line-height: 20px; }
-  fieldset { margin: 0 auto 32px auto; padding: 16px; }
-  .ui-item a { padding: 8px 8px; }
-  .ui-item-expanded { margin: 0 0 8px 0; }
-  .ui-item-expanded .ui-item { margin-left: 4px; }
-  .ui-item-expanded .ui-item-form { margin-left: 4px; }
+  header, article, footer { margin: 16px; }
 }
