@@ -10,9 +10,9 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/nathanborror/gommon/auth"
-	"github.com/nathanborror/gommon/hubspoke"
 	"github.com/nathanborror/gommon/markdown"
 	"github.com/nathanborror/gommon/render"
+	"github.com/nathanborror/gommon/spokes"
 	"github.com/nathanborror/skit/items"
 	"github.com/nathanborror/skit/messages"
 )
@@ -190,7 +190,7 @@ func messagesHandler(w http.ResponseWriter, r *http.Request) {
 var r = mux.NewRouter()
 
 func main() {
-	go hubspoke.Hub.Run()
+	go spokes.Hub.Run()
 
 	// Users
 	r.HandleFunc("/login", auth.LoginHandler)
@@ -207,7 +207,7 @@ func main() {
 	r.HandleFunc("/m/{hash:[a-zA-Z0-9-]+}/delete", auth.LoginRequired(messages.DeleteHandler))
 	r.HandleFunc("/m/{root:[a-zA-Z0-9-]+}", auth.LoginRequired(messagesHandler))
 
-	r.HandleFunc("/ws", hubspoke.SpokeHandler)
+	r.HandleFunc("/ws", spokes.SpokeHandler)
 	r.HandleFunc("/u/{hash:[a-zA-Z0-9-]+}", auth.LoginRequired(personHandler))
 	r.HandleFunc("/u", auth.LoginRequired(peopleHandler))
 	r.HandleFunc("/", auth.LoginRequired(rootHandler))
