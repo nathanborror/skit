@@ -4,14 +4,15 @@ import "time"
 
 // Item defines a blob
 type Item struct {
-	Hash     string    `json:"hash"`
-	Parent   string    `json:"parent"`
-	Root     string    `json:"root"`
-	User     string    `json:"user"`
-	Text     string    `json:"text"`
-	Created  time.Time `json:"created"`
-	Modified time.Time `json:"modified"`
-	Color    string    `json:"color"`
+	Hash       string    `json:"hash"`
+	Parent     string    `json:"parent"`
+	Root       string    `json:"root"`
+	User       string    `json:"user"`
+	Text       string    `json:"text"`
+	Created    time.Time `json:"created"`
+	Modified   time.Time `json:"modified"`
+	Color      string    `json:"color"`
+	IsArchived bool      `json:"is_archived"`
 }
 
 // ChildCount returns children count

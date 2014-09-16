@@ -1,8 +1,8 @@
 package items
 
 import (
-	"time"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/nathanborror/gommon/auth"
@@ -26,6 +26,7 @@ func SaveHandler(w http.ResponseWriter, r *http.Request) {
 	text := r.FormValue("text")
 	color := r.FormValue("color")
 	created := time.Now()
+	isarchived := false
 
 	if hash == "" {
 		hash = GenerateItemHash(text)
@@ -40,7 +41,7 @@ func SaveHandler(w http.ResponseWriter, r *http.Request) {
 		created = item.Created
 	}
 
-	i := &Item{Hash: hash, Parent: parent, Root: root, User: user.Hash, Text: text, Color: color, Created: created}
+	i := &Item{Hash: hash, Parent: parent, Root: root, User: user.Hash, Text: text, Color: color, Created: created, IsArchived: isarchived}
 	err = repo.Save(i)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -75,5 +76,24 @@ func DeleteHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	http.Redirect(w, r, "/", http.StatusFound)
+}
+
+func ArchiveHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	hash := vars["hash"]
+
+	i, err := repo.Load(hash)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if i.IsArchived {
+		err = repo.UnArchive(i)
+	} else {
+		err = repo.Archive(i)
+	}
+
 	http.Redirect(w, r, "/", http.StatusFound)
 }

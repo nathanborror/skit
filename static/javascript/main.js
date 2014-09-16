@@ -162,6 +162,7 @@ ItemManager.handleContextMenu = function(e) {
     'Colors': ItemManager.color,
     'View': Item.view,
     'Edit': Item.edit,
+    'Archive': Item.archive,
     'Delete': Item.delete
   }, e);
 };
@@ -225,7 +226,11 @@ Item.html = function(data, extraClass) {
   }
 
   if (isLight(data.color)) {
-    extraClass += ' ui-item-light'
+    extraClass += ' ui-item-light';
+  }
+
+  if (data.is_archived) {
+    extraClass += ' ui-item-archived';
   }
 
   var item = $(''+
@@ -238,7 +243,8 @@ Item.html = function(data, extraClass) {
     'root': data.root,
     'user': data.user,
     'text': data.text,
-    'color': data.color
+    'color': data.color,
+    'is_archived': data.is_archived
   });
 
   if (isQuestion) {
@@ -263,6 +269,18 @@ Item.save = function(data, complete) {
 Item.edit = function(e) {
   e.preventDefault();
   alert("Not implemented yet :(");
+};
+
+Item.archive = function(e) {
+  e.preventDefault();
+  $.post('/i/'+e.data.hash+'/archive', function(data) {
+    if (data.error) {
+      console.log(data.error);
+    } else {
+      var item = $('#'+e.data.hash);
+      item.addClass('ui-item-archived');
+    }
+  });
 };
 
 // Deletes removes an item.

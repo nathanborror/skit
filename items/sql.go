@@ -81,3 +81,15 @@ func (r *sqlItemRepository) ListParents(hash string) ([]*Item, error) {
 	err := r.dbmap.Select(&obj, "SELECT * FROM item WHERE root = ? ORDER BY created DESC", hash)
 	return obj, err
 }
+
+func (r *sqlItemRepository) Archive(item *Item) error {
+	item.IsArchived = true
+	_, err := r.dbmap.Update(item)
+	return err
+}
+
+func (r *sqlItemRepository) UnArchive(item *Item) error {
+	item.IsArchived = false
+	_, err := r.dbmap.Update(item)
+	return err
+}

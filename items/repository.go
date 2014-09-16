@@ -9,4 +9,6 @@ type ItemRepository interface {
 	ListWithParent(parent string) ([]*Item, error)
 	ListWithUser(user string) ([]*Item, error)
 	ListParents(hash string) ([]*Item, error)
+	Archive(item *Item) error
+	UnArchive(item *Item) error
 }

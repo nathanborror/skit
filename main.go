@@ -200,6 +200,7 @@ func main() {
 	// Item
 	r.HandleFunc("/i/save", auth.LoginRequired(items.SaveHandler))
 	r.HandleFunc("/i/{hash:[a-zA-Z0-9-]+}/delete", auth.LoginRequired(items.DeleteHandler))
+	r.HandleFunc("/i/{hash:[a-zA-Z0-9-]+}/archive", auth.LoginRequired(items.ArchiveHandler))
 	r.HandleFunc("/i/{hash:[a-zA-Z0-9-]+}", auth.LoginRequired(homeHandler))
 
 	// Message

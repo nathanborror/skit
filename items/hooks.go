@@ -1,8 +1,9 @@
 package items
 
 import (
-	"github.com/jmoiron/modl"
 	"time"
+
+	"github.com/jmoiron/modl"
 )
 
 // PreInsert sets the Created and Modified time before Item is saved.
