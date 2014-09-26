@@ -1,39 +1,11 @@
 @import url(reset.css);
 @import url(fonts.css);
+@import url(common.css);
 
-* { box-sizing: border-box; }
+body, textarea, input, button { font-family: "M1c"; }
 
-body { background: #f9f9f9; }
-body, textarea, input, button { font-family: "M1c"; font-weight: 400; font-size: 14px; line-height: 20px; }
+header, article, footer { margin: 32px; }
 
-header, article, footer { margin: 32px 448px 32px 32px; }
-header:after, article:after, footer:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
-
-form { position: relative; margin-bottom: 32px; }
-
-fieldset { margin: 0 auto 32px auto; padding: 32px; max-width: 512px; background: #f9f9f9; border-radius: 8px; }
-fieldset input { margin-bottom: 8px;}
-
-body, article, textarea, input, button, div { box-sizing: border-box; }
-
-input, textarea { display: block; background: #fff; box-sizing: border-box; margin: 0; padding: 12px;
-  width: 100%; border: none; border-radius: 4px; box-shadow: 0 1px 1px 0 rgba(0,0,0,.1); }
-input:focus { box-shadow: 0 1px 1px 0 rgba(0,0,0,.1), 0 0 0 2px rgba(81,158,244,.5); }
-textarea { height: 48px; resize: none; overflow: hidden; }
-textarea[name="text"] { height: 448px; }
-::-webkit-input-placeholder { color: #777; }
-:focus::-webkit-input-placeholder { color: #ccc; }
-button { display: inline-block; float: right; margin: 0; padding: 12px 32px; border: none; background: #fff; color: #777; border-radius: 4px;
-  box-shadow: 0 1px 0 0 rgba(0,0,0,.1); }
-
-h1 { font-size: 20px; }
-p { margin-bottom: 8px; line-height: 1.3; }
-li { margin-bottom: 4px; line-height: 1.3; }
-
-footer { text-align: center; font-size: 12px; color: #aaa; }
-footer a { color: #aaa; }
-
-.hidden { display: none; }
 
 /* Buttons */
 .ui-button { display: block; padding: 12px 32px; background-color: #fff; color: #777; border-radius: 4px;
