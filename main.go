@@ -94,6 +94,7 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 	u, err := auth.GetAuthenticatedUser(r)
 	if err != nil {
 		http.Redirect(w, r, "/login", http.StatusFound)
+		return
 	}
 	http.Redirect(w, r, "/u/"+u.Hash, http.StatusFound)
 }
