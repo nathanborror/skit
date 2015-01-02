@@ -32,7 +32,7 @@ func SaveHandler(w http.ResponseWriter, r *http.Request) {
 		root = hash
 	}
 
-	m := &Message{Hash: hash, Parent: parent, Root: root, User: user.Hash, Text: text}
+	m := &Message{Hash: hash, Parent: parent, Root: root, User: user.Key, Text: text}
 	err = repo.Save(m)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -54,7 +54,7 @@ func DeleteHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if m.User != u.Hash {
+	if m.User != u.Key {
 		render.Render(w, r, "error", map[string]interface{}{
 			"error":   "You can only delete items you created.",
 			"request": r,

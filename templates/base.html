@@ -52,7 +52,7 @@
   <div class="ui-item{{if .Color|isLight}} ui-item-light{{end}}{{if .IsArchived}} ui-item-archived{{end}}" id="{{.Hash}}" data-hash="{{.Hash}}" data-parent="{{.Parent}}" data-root="{{.Root}}" data-user="{{.User}}" data-text="{{.Text}}" data-color="{{.Color}}" data-is_archived="{{.IsArchived}}">
     <a style="background-color: rgba({{if .Color}}{{.Color}}{{else}}110,171,221{{end}},1)" href="/i/{{.Hash}}">
       {{if .Text|isQuestion}}{{.Text|slice "0:-1"}}<span class="ui-item-question">?</span>{{else}}{{.Text}}{{end}}
-      {{with $user := .User|user}}<span class="ui-item-user" data-name="{{$user.Name}}" data-hash="{{$user.Hash}}" data-email="{{$user.Email}}"></span>{{end}}
+      {{with $user := .User|user}}<span class="ui-item-user" data-name="{{$user.Name}}" data-hash="{{$user.Key}}" data-email="{{$user.Email}}"></span>{{end}}
     </a>
   </div>
 {{end}}

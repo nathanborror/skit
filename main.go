@@ -83,20 +83,13 @@ func slice(args ...interface{}) string {
 	return args[0].(string)
 }
 
-func check(err error, w http.ResponseWriter) {
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-}
-
 func rootHandler(w http.ResponseWriter, r *http.Request) {
 	u, err := auth.GetAuthenticatedUser(r)
 	if err != nil {
 		http.Redirect(w, r, "/login", http.StatusFound)
 		return
 	}
-	http.Redirect(w, r, "/u/"+u.Hash, http.StatusFound)
+	http.Redirect(w, r, "/u/"+u.Key, http.StatusFound)
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
@@ -120,12 +113,12 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	// items a user is involved in.
 	if i != nil {
 		c, err = itemRepo.ListWithParent(i.Hash)
-		check(err, w)
+		render.Check(err, w)
 
 		m, _ = messageRepo.ListForRoot(i.Root)
 	} else {
-		c, err = itemRepo.ListWithUser(u.Hash)
-		check(err, w)
+		c, err = itemRepo.ListWithUser(u.Key)
+		render.Check(err, w)
 	}
 
 	render.Render(w, r, "home", map[string]interface{}{
@@ -139,7 +132,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 func peopleHandler(w http.ResponseWriter, r *http.Request) {
 	u, err := authRepo.List(10)
-	check(err, w)
+	render.Check(err, w)
 
 	render.Render(w, r, "users", map[string]interface{}{
 		"users":   u,
@@ -149,13 +142,13 @@ func peopleHandler(w http.ResponseWriter, r *http.Request) {
 
 func personHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	hash := vars["hash"]
+	key := vars["key"]
 
-	u, err := authRepo.Load(hash)
-	check(err, w)
+	u, err := authRepo.Get(key)
+	render.Check(err, w)
 
-	i, err := itemRepo.ListWithUser(u.Hash)
-	check(err, w)
+	i, err := itemRepo.ListWithUser(u.Key)
+	render.Check(err, w)
 
 	render.Render(w, r, "home", map[string]interface{}{
 		"request": r,
@@ -175,10 +168,10 @@ func messagesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	i, err := itemRepo.Load(root)
-	check(err, w)
+	render.Check(err, w)
 
 	m, err := messageRepo.ListForRoot(root)
-	check(err, w)
+	render.Check(err, w)
 
 	render.Render(w, r, "message_view", map[string]interface{}{
 		"request":  r,
@@ -210,7 +203,7 @@ func main() {
 	r.HandleFunc("/m/{root:[a-zA-Z0-9-]+}", auth.LoginRequired(messagesHandler))
 
 	r.HandleFunc("/ws", spokes.SpokeHandler)
-	r.HandleFunc("/u/{hash:[a-zA-Z0-9-]+}", auth.LoginRequired(personHandler))
+	r.HandleFunc("/u/{key:[a-zA-Z0-9-]+}", auth.LoginRequired(personHandler))
 	r.HandleFunc("/u", auth.LoginRequired(peopleHandler))
 	r.HandleFunc("/", auth.LoginRequired(rootHandler))
 

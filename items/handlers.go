@@ -6,6 +6,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/nathanborror/gommon/auth"
+	"github.com/nathanborror/gommon/crypto"
 	"github.com/nathanborror/gommon/render"
 )
 
@@ -29,7 +30,7 @@ func SaveHandler(w http.ResponseWriter, r *http.Request) {
 	isarchived := false
 
 	if hash == "" {
-		hash = GenerateItemHash(text)
+		hash = crypto.UniqueHash(text)
 	}
 
 	if root == "" {
@@ -41,7 +42,7 @@ func SaveHandler(w http.ResponseWriter, r *http.Request) {
 		created = item.Created
 	}
 
-	i := &Item{Hash: hash, Parent: parent, Root: root, User: user.Hash, Text: text, Color: color, Created: created, IsArchived: isarchived}
+	i := &Item{Hash: hash, Parent: parent, Root: root, User: user.Key, Text: text, Color: color, Created: created, IsArchived: isarchived}
 	err = repo.Save(i)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -63,7 +64,7 @@ func DeleteHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if i.User != u.Hash {
+	if i.User != u.Key {
 		render.Render(w, r, "error", map[string]interface{}{
 			"error":   "You can only delete items you created.",
 			"request": r,
@@ -79,6 +80,7 @@ func DeleteHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusFound)
 }
 
+// ArchiveHandler handles archiving items.
 func ArchiveHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	hash := vars["hash"]
